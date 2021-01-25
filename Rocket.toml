@@ -1,0 +1,2 @@
+[global.databases]
+pg_db = { url = "mysql://root:Mysql_990804@localhost/pastin" }
