@@ -1,13 +1,17 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
-#[macro_use] extern crate rocket;
-
-#[macro_use] extern crate diesel;
+#[macro_use] 
+extern crate rocket;
+#[macro_use] 
+extern crate diesel;
+#[macro_use]
+extern crate serde_json;
 mod paste_id;
 mod database;
+mod schema;
 
 use paste_id::PasteId;
-use database::conn::PgConn;
+use database::{conn::DbConn, models};
 //embed_migrations!();
 
 #[get("/")]
@@ -17,13 +21,24 @@ fn index() -> &'static str {
 
 use rocket::{Data, Rocket, http::RawStr};
 use std::{fs::File, path::Path};
-#[post("/", data = "<paste>")]
-fn upload(paste: Data) -> Result<String, std::io::Error> {
-    let id = PasteId::new(3);
-    let file_name = format!("upload/{id}", id = id);
-    let url = format!("{host}/{id}\n", host = "http://localhost:8000", id = id);
+use serde::{Deserialize, Serialize};
+use rocket_contrib::json::Json;
 
-    paste.stream_to_file(Path::new(&file_name))?;
+
+#[derive(Serialize, Deserialize)]
+struct Post {
+    data: String,
+}
+#[post("/", data = "<paste>")]
+fn upload(paste: Json<Post>, conn: DbConn) -> Result<String, std::io::Error> {
+    let id = PasteId::new(3);
+    let db_post = models::Post{
+        id: 123456,
+        username: "".to_string(),
+        postdata: paste.data.to_string()
+    };
+    let url = format!("{host}/{id}\n", host = "http://localhost:8000", id = id);
+    database::post::create_new_post(db_post, conn);
     Ok(url)
 }
 
@@ -33,8 +48,8 @@ fn retrieve(id: &RawStr) -> Option<File> {
     File::open(&file_name).ok()
 }
 
-fn rocket() -> Rocket{
-    rocket::ignite().attach(PgConn::fairing()).mount("/", routes![index,upload,retrieve])
+fn rocket() -> Rocket {
+    rocket::ignite().attach(DbConn::fairing()).mount("/", routes![index,upload,retrieve])
 }
 
 // fn run_migration(db_con: &diesel::PgConnection){
@@ -45,7 +60,7 @@ fn rocket() -> Rocket{
 
 fn main() {
     let rocket = rocket();
-    let conn = PgConn::get_one(&rocket).unwrap();
+    //let conn = PgConn::get_one(&rocket).unwrap();
     //run_migration(&*conn);
     rocket.launch();
 }
