@@ -1,4 +1,5 @@
 use crate::schema::{post, users};
+use serde::{Deserialize, Serialize};
 
 #[derive(Queryable)]
 pub struct Post {
@@ -14,10 +15,11 @@ pub struct NewPost {
     pub postdata: String,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Serialize, Deserialize)]
 #[table_name = "users"]
 pub struct NewUser {
     pub username: String,
+    pub password: String,
     pub email: String,
     pub age: Option<i32>,
     pub sex: Option<bool>,

@@ -1,9 +1,11 @@
 use crate::database::{self, conn::DbConn, models};
-use rocket::{Rocket, http::{RawStr, Cookie}, response::Redirect};
+use rocket::{Rocket, http::{RawStr, Cookie, Status}, response::Redirect};
 use std::str::FromStr;
 use serde::{Deserialize, Serialize};
 use rocket_contrib::json::Json;
 use super::models::*;
+use rocket::response::status;
+
 use crate::paste_id::PasteId;
 
 #[get("/")]
@@ -33,4 +35,10 @@ pub fn retrieve(id: &RawStr, conn: DbConn) -> Json<Post> {
         "error, id error".to_string()
     };
     Json(Post{data: ret_data})
+}
+
+#[post("/register", data = "<user>")]
+pub fn register(user: Json<NewUser>, conn: DbConn) -> status::Accepted<String> {
+    let new_user = database::user::create_new_user(user.into_inner(), conn);
+    status::Accepted(Some(format!("id: '{}'", new_user.id)))
 }

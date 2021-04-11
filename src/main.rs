@@ -20,7 +20,7 @@ use crate::router::routers::*;
 
 ////////////////////////////////////
 fn rocket() -> Rocket {
-    rocket::ignite().attach(DbConn::fairing()).mount("/", routes![index,upload,retrieve])
+    rocket::ignite().attach(DbConn::fairing()).mount("/", routes![index,upload,retrieve,register])
 }
 
 fn main() {
