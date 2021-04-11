@@ -6,7 +6,8 @@ pub fn create_new_post(post: models::NewPost, conn: DbConn) -> models::Post {
             .values(&post)
             .execute(&*conn)
             .expect("Error saving new post");
-    post::table.order(post::id.desc()).first(&*conn).unwrap()
+    post::table.order(post::id.desc())
+    .first(&*conn).unwrap()
 }
 
 pub fn get_post_by_id(get_id: i32, conn: DbConn) -> Option<models::Post> {
