@@ -24,12 +24,12 @@ pub struct NewUser {
     pub age: Option<i32>,
     pub sex: Option<bool>,
 }
-#[derive(Queryable)]
+#[derive(Queryable, Serialize)]
 pub struct Users {
     pub id: i32,
     pub username: String,
-    pub email: String,
     pub password: String,
+    pub email: String,
     pub age: Option<i32>,
     pub sex: Option<bool>,
 }

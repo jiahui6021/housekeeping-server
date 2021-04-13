@@ -1,5 +1,5 @@
 use super::{models, conn::DbConn};
-use crate::{schema::users};
+use crate::{schema::users::{self, dsl}};
 use diesel::prelude::*;
 pub fn create_new_user(user: models::NewUser, conn: DbConn) -> models::Users {
     diesel::insert_into(users::table)
@@ -11,4 +11,11 @@ pub fn create_new_user(user: models::NewUser, conn: DbConn) -> models::Users {
 
 pub fn get_user_by_id(get_id: i32, conn: DbConn) -> Option<models::Users> {
     users::table.find(get_id).first(&*conn).ok()
+}
+
+pub fn get_user_by_username(username: &String, conn: DbConn) -> Option<models::Users> {
+    dsl::users
+    .filter(dsl::username.eq(username))
+    .first::<models::Users>(&*conn)
+    .ok()
 }

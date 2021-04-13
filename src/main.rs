@@ -6,6 +6,9 @@ extern crate rocket;
 extern crate diesel;
 #[macro_use]
 extern crate serde_json;
+#[macro_use] 
+extern crate rocket_contrib;
+
 mod paste_id;
 mod database;
 mod schema;
@@ -20,7 +23,8 @@ use crate::router::routers::*;
 
 ////////////////////////////////////
 fn rocket() -> Rocket {
-    rocket::ignite().attach(DbConn::fairing()).mount("/", routes![index,upload,retrieve,register])
+    rocket::ignite().attach(DbConn::fairing())
+    .mount("/",routes![index,upload,retrieve,register,login])
 }
 
 fn main() {
