@@ -13,9 +13,9 @@ pub fn get_user_by_id(get_id: i32, conn: DbConn) -> Option<models::Users> {
     users::table.find(get_id).first(&*conn).ok()
 }
 
-pub fn get_user_by_username(username: &String, conn: DbConn) -> Option<models::Users> {
+pub fn get_user_by_email(email: &String, conn: DbConn) -> Option<models::Users> {
     dsl::users
-    .filter(dsl::username.eq(username))
+    .filter(dsl::email.eq(email))
     .first::<models::Users>(&*conn)
     .ok()
 }

@@ -1,4 +1,4 @@
-use crate::schema::{post, users};
+use crate::schema::{post, users, service};
 use serde::{Deserialize, Serialize};
 
 #[derive(Queryable)]
@@ -32,4 +32,24 @@ pub struct Users {
     pub email: String,
     pub age: Option<i32>,
     pub sex: Option<bool>,
+}
+
+#[derive(Queryable, Serialize)]
+pub struct Service {
+    pub id: i32,
+    pub province: i32,
+    pub city: i32,
+    pub street: i32,
+    pub name: String,
+    pub price: i32,
+}
+
+#[derive(Insertable, Serialize, Deserialize)]
+#[table_name = "service"]
+pub struct NewService {
+    pub province: i32,
+    pub city: i32,
+    pub street: i32,
+    pub name: String,
+    pub price: i32,
 }
