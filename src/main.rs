@@ -23,7 +23,7 @@ use database::{conn::DbConn};
 
 
 use rocket::{Rocket, http::{RawStr, Cookie}, response::Redirect};
-use crate::{router::routers::*, admin::account};
+use crate::{router::routers::*, admin::{account, menu}};
 use rocket_contrib::serve::StaticFiles;
 
 ////////////////////////////////////
@@ -34,6 +34,7 @@ fn rocket() -> Rocket {
     hot_goods, get_goods])
     .mount("/account", routes![account::router::login_admin
                                     ,account::router::info_admin])
+    .mount("/menu", routes![menu::router::list_admin])
     .mount("/file", StaticFiles::from("static"))
 }
 

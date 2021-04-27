@@ -4,7 +4,7 @@ use diesel::prelude::*;
 use rocket::{Request, request::{self, FromRequest}, Outcome, http::Status};
 use std::error::Error;
 
-#[derive(Insertable, Queryable, Serialize, Deserialize)]
+#[derive(Insertable, Queryable, Serialize, Deserialize, Default)]
 #[table_name = "user"]
 pub struct User {
     pub id: i32,
@@ -52,6 +52,13 @@ impl User {
             }
             None => {None}
         }
+    }
+
+    pub fn from_id(id: i32, conn: &DbConn) -> Option<Self> {
+        dsl::user
+        .filter(dsl::id.eq(id))
+        .first::<Self>(&**conn)
+        .ok()
     }
 
     // generate new JWT token
@@ -102,4 +109,13 @@ impl<'a, 'r> FromRequest<'a, 'r> for TokenUser {
         Outcome::Success(resp)
     }
 
+}
+
+#[derive(Serialize, Deserialize, Default)]
+pub struct AdminInfo {
+    pub name: String,
+    pub permissions: Vec<String>,
+    pub profile: User,
+    pub role: String,
+    pub roles: Vec<String>
 }
