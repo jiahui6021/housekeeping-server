@@ -13,18 +13,28 @@ mod paste_id;
 mod database;
 mod schema;
 mod router;
+mod admin;
+mod models;
+mod jwt;
+//mod logic;
 
-use database::{conn::DbConn, models};
+use database::{conn::DbConn};
 //embed_migrations!();
 
 
 use rocket::{Rocket, http::{RawStr, Cookie}, response::Redirect};
-use crate::router::routers::*;
+use crate::{router::routers::*, admin::account};
+use rocket_contrib::serve::StaticFiles;
 
 ////////////////////////////////////
 fn rocket() -> Rocket {
+
     rocket::ignite().attach(DbConn::fairing())
-    .mount("/",routes![index,upload,retrieve,register,login, pos_service, service])
+    .mount("/",routes![index,retrieve,register,login, pos_service, service, new_post, category_list,
+    hot_goods, get_goods])
+    .mount("/account", routes![account::router::login_admin
+                                    ,account::router::info_admin])
+    .mount("/file", StaticFiles::from("static"))
 }
 
 fn main() {

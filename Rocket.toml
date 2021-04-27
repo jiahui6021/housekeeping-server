@@ -1,6 +1,6 @@
 [global.databases]
-pg_db = { url = "mysql://root:Mysql_990804@localhost/pastin" }
+pg_db = { url = "mysql://root:123456@localhost/housekeeping" }
 
 [development]
-address = "0.0.0.0"
+address = "localhost"
 port = 8000

@@ -13,3 +13,7 @@ pub fn create_new_post(post: models::NewPost, conn: DbConn) -> models::Post {
 pub fn get_post_by_id(get_id: i32, conn: DbConn) -> Option<models::Post> {
     post::table.find(get_id).first(&*conn).ok()
 }
+
+pub fn get_feeds_by_service(service: i32, last_id: i32,conn: DbConn) -> Option<Vec<models::Post>> {
+    None
+}

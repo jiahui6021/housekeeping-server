@@ -1,17 +1,10 @@
 table! {
-    pos (country, province, street) {
-        country -> Integer,
-        province -> Integer,
-        street -> Integer,
-        service -> Integer,
-    }
-}
-
-table! {
     post (id) {
         id -> Integer,
-        username -> Varchar,
+        name -> Varchar,
         postdata -> Varchar,
+        user -> Integer,
+        service -> Integer,
     }
 }
 
@@ -27,6 +20,24 @@ table! {
 }
 
 table! {
+    user (id) {
+        id -> Integer,
+        avater -> Varchar,
+        account -> Varchar,
+        password -> Varchar,
+        salt -> Varchar,
+        name -> Varchar,
+        sex -> Integer,
+        email -> Varchar,
+        phone -> Varchar,
+        roleid -> Varchar,
+        deptid -> Varchar,
+        status -> Integer,
+        version -> Integer,
+    }
+}
+
+table! {
     users (id) {
         id -> Integer,
         username -> Varchar,
@@ -38,8 +49,8 @@ table! {
 }
 
 allow_tables_to_appear_in_same_query!(
-    pos,
     post,
     service,
+    user,
     users,
 );
