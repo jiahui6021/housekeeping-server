@@ -1,4 +1,19 @@
 table! {
+    category (id) {
+        id -> Integer,
+        descript -> Varchar,
+        icon -> Varchar,
+        url -> Varchar,
+        label -> Varchar,
+        name -> Varchar,
+        showIndex -> Bool,
+        isDelete -> Bool,
+        sort -> Integer,
+        pid -> Nullable<Integer>,
+    }
+}
+
+table! {
     post (id) {
         id -> Integer,
         name -> Varchar,
@@ -49,6 +64,7 @@ table! {
 }
 
 allow_tables_to_appear_in_same_query!(
+    category,
     post,
     service,
     user,

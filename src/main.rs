@@ -23,18 +23,21 @@ use database::{conn::DbConn};
 
 
 use rocket::{Rocket, http::{RawStr, Cookie}, response::Redirect};
-use crate::{router::routers::*, admin::{account, menu}};
+use crate::{router::routers::*, admin::{account, menu, shop}};
 use rocket_contrib::serve::StaticFiles;
 
 ////////////////////////////////////
 fn rocket() -> Rocket {
 
     rocket::ignite().attach(DbConn::fairing())
-    .mount("/",routes![index,retrieve,register,login, pos_service, service, new_post, category_list,
-    hot_goods, get_goods])
+    .mount("/",routes![index,retrieve,register,login, pos_service, service, new_post,
+    hot_goods, get_goods, shop::router::get_user_category])
     .mount("/account", routes![account::router::login_admin
                                     ,account::router::info_admin])
     .mount("/menu", routes![menu::router::list_admin])
+    .mount("/shop", routes![shop::router::add_category,
+                                  shop::router::get_category,
+                                  shop::router::delete_category])
     .mount("/file", StaticFiles::from("static"))
 }
 

@@ -36,11 +36,26 @@ pub fn login_admin(username: String, password: String, conn: DbConn) -> ApiRespo
 #[get("/info")]
 pub fn info_admin(token_user: TokenUser, conn: DbConn) -> ApiResponse {
     let user = User::from_id(token_user.id, &conn);
-    let mut admin_info = AdminInfo::default();
-    admin_info.role = "admin".to_string();
-    admin_info.roles = vec!["administrator".to_string()];
-    ApiResponse{
-        json: json!(get_ok_resp(admin_info)),
-        status: Status::Ok,
+    match user {
+        Some(user) => {
+            let admin_info = AdminInfo {
+                name: user.name.clone(),
+                role: "admin".to_string(),
+                roles: vec!["administrator".to_string()],
+                profile: user,
+                permissions: vec![]
+            };
+            return ApiResponse{
+                json: json!(get_ok_resp(admin_info)),
+                status: Status::Ok,
+            }
+        }
+        None => {
+            return ApiResponse{
+                json: json!(""),
+                status: Status::BadRequest,
+            }
+        }
     }
+    
 }

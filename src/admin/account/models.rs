@@ -4,7 +4,7 @@ use diesel::prelude::*;
 use rocket::{Request, request::{self, FromRequest}, Outcome, http::Status};
 use std::error::Error;
 
-#[derive(Insertable, Queryable, Serialize, Deserialize, Default)]
+#[derive(Insertable, Queryable, Serialize, Deserialize, Default, Clone)]
 #[table_name = "user"]
 pub struct User {
     pub id: i32,

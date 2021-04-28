@@ -184,27 +184,27 @@ pub fn pos_service(province: i32, city: i32, street: i32, name: String, price:i3
 ///////////////////////////// mobile h5 ////////////////////////////////
 
 /// 首页顶部 tab
-#[get("/category/list")]
-pub fn category_list() -> ApiResponse {
-    let mut list = Vec::new();
-    list.push(CategoryList{
-        id: 1,
-        name: "保洁".to_string()
-    });
-    list.push(CategoryList{
-        id: 2,
-        name: "家修".to_string()
-    });
-    list.push(CategoryList{
-        id: 3,
-        name: "搬家".to_string()
-    });
+// #[get("/category/list")]
+// pub fn category_list() -> ApiResponse {
+//     let mut list = Vec::new();
+//     list.push(CategoryList{
+//         id: 1,
+//         name: "保洁".to_string()
+//     });
+//     list.push(CategoryList{
+//         id: 2,
+//         name: "家修".to_string()
+//     });
+//     list.push(CategoryList{
+//         id: 3,
+//         name: "搬家".to_string()
+//     });
 
-    ApiResponse {
-        json: json!(get_ok_resp(list)),
-        status: Status::Ok,
-    }
-}
+//     ApiResponse {
+//         json: json!(get_ok_resp(list)),
+//         status: Status::Ok,
+//     }
+// }
 
 /// 首页热门推荐
 #[get("/goods/searchHot")]
