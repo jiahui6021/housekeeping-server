@@ -44,8 +44,11 @@ fn rocket() -> Rocket {
                                   shop::router::change_onsale,
                                   shop::router::get_good])
     .mount("/file", StaticFiles::from("static"))
-    .mount("/cart", routes![cart::router::add_cart])
-    .mount("/user", routes![account::router::get_user_info])
+    .mount("/user", routes![account::router::get_user_info,
+                                    cart::router::add_cart,
+                                    cart::router::get_cart,
+                                    cart::router::add_cart_count,
+                                    cart::router::del_cart])
 }
 
 fn main() {

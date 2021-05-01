@@ -4,7 +4,7 @@ table! {
         count -> Integer,
         idGoods -> Integer,
         idSku -> Nullable<Integer>,
-        user_id -> Nullable<Integer>,
+        user_id -> Integer,
     }
 }
 

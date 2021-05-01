@@ -1,5 +1,6 @@
 use crate::database::conn::DbConn;
 use models::User;
+pub use logic::get_shop_user_by_id;
 
 pub mod models;
 pub mod router;
@@ -14,6 +15,18 @@ pub fn check_user_admin(id: i32, conn: &DbConn) -> bool {
             } else {
                 false
             }
+        }
+        None => {
+            false
+        }
+    }
+}
+
+pub fn check_shop_user(id: i32, conn: &DbConn) -> bool {
+    let user = User::from_id(id, &conn);
+    match user {
+        Some(user) => {
+            true
         }
         None => {
             false
