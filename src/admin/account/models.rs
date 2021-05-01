@@ -1,4 +1,4 @@
-use crate::{database::conn::DbConn, schema::user::{self, dsl}, jwt::JWT};
+use crate::{database::conn::DbConn, schema::{user::{self, dsl}, shop_user}, jwt::JWT};
 use serde::{Deserialize, Serialize};
 use diesel::prelude::*;
 use rocket::{Request, request::{self, FromRequest}, Outcome, http::Status};
@@ -118,4 +118,36 @@ pub struct AdminInfo {
     pub profile: User,
     pub role: String,
     pub roles: Vec<String>
+}
+
+#[derive(Queryable, Serialize, Deserialize, Default, Clone)]
+pub struct ShopUser {
+    pub id: i32,
+    pub mobile: String,
+    pub password: String,
+    pub nickName: String,
+    pub avatar: String,
+    pub gender: String,
+}
+
+#[derive(Insertable, Serialize, Deserialize, Default, Clone)]
+#[table_name = "shop_user"]
+pub struct NewShopUser {
+    pub mobile: String,
+    pub password: String,
+    pub nickName: String,
+    pub avatar: String,
+    pub gender: String,
+}
+
+#[derive(Serialize, Deserialize, Default)]
+pub struct ShopUserResp {
+    pub token: String,
+    pub user: ShopUser,
+}
+
+impl ShopUser {
+    pub fn generate_token(&self, duration: i64, secret: &str) -> String {
+        JWT::new(self.id, duration).to_token(secret).unwrap()
+    }
 }

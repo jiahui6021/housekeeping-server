@@ -1,10 +1,11 @@
 use crate::database::{self, conn::DbConn, models};
 use log::debug;
-use rocket::{Rocket, data, http::{RawStr, Cookie, Cookies, Status, ContentType}, request::Request, response::{self, Redirect, status, Responder, Response}};
-use std::str::FromStr;
+use rocket::{Rocket, data, Data, http::{RawStr, Cookie, Cookies, Status, ContentType}, request::Request, response::{self, Redirect, status, Responder, Response}};
+use std::{path::Path, str::FromStr};
 use serde::{Deserialize, Serialize};
 use rocket_contrib::json::{Json, JsonValue};
 use super::models::*;
+use rocket_upload::MultipartDatas;
 
 use crate::paste_id::PasteId;
 
@@ -183,7 +184,7 @@ pub fn pos_service(province: i32, city: i32, street: i32, name: String, price:i3
 
 ///////////////////////////// mobile h5 ////////////////////////////////
 
-/// 首页顶部 tab
+// 首页顶部 tab
 // #[get("/category/list")]
 // pub fn category_list() -> ApiResponse {
 //     let mut list = Vec::new();
@@ -206,78 +207,78 @@ pub fn pos_service(province: i32, city: i32, street: i32, name: String, price:i3
 //     }
 // }
 
-/// 首页热门推荐
-#[get("/goods/searchHot")]
-pub fn hot_goods() -> ApiResponse {
-    let mut list = Vec::new();
-    list.push(Goods{
-        id: 1,
-        name: "找保姆".to_string(),
-        descript: "家庭餐饮制作，卫生清洁，照看老人小孩".to_string(),
-        pic: "images/test.jpg".to_string(),
-        price: 35723,
-        isHot: true,
-        isNew: true,
-        gallery: "".to_string(),
-        stock: 123,
-        isOnSale: true,
-    });
+// 首页热门推荐
+// #[get("/goods/searchHot")]
+// pub fn hot_goods() -> ApiResponse {
+//     let mut list = Vec::new();
+//     list.push(Goods{
+//         id: 1,
+//         name: "找保姆".to_string(),
+//         descript: "家庭餐饮制作，卫生清洁，照看老人小孩".to_string(),
+//         pic: "images/test.jpg".to_string(),
+//         price: 35723,
+//         isHot: true,
+//         isNew: true,
+//         gallery: "".to_string(),
+//         stock: 123,
+//         isOnSale: true,
+//     });
 
-    list.push(Goods{
-        id: 2,
-        name: "找月嫂".to_string(),
-        descript: "专注母婴健康护理，月嫂高标准筛选，专属客服售后，雇主、阿姨双重保险".to_string(),
-        pic: "images/test.jpg".to_string(),
-        price: 234833,
-        isHot: true,
-        isNew: true,
-        gallery: "".to_string(),
-        stock: 213,
-        isOnSale: true,
-    });
+//     list.push(Goods{
+//         id: 2,
+//         name: "找月嫂".to_string(),
+//         descript: "专注母婴健康护理，月嫂高标准筛选，专属客服售后，雇主、阿姨双重保险".to_string(),
+//         pic: "images/test.jpg".to_string(),
+//         price: 234833,
+//         isHot: true,
+//         isNew: true,
+//         gallery: "".to_string(),
+//         stock: 213,
+//         isOnSale: true,
+//     });
 
-    ApiResponse {
-        json: json!(get_ok_resp(list)),
-        status: Status::Ok,
-    }
-}
+//     ApiResponse {
+//         json: json!(get_ok_resp(list)),
+//         status: Status::Ok,
+//     }
+// }
 
-/// 商品页商品信息
-#[get("/goods/<id>")]
-pub fn get_goods(id: i32) -> ApiResponse {
-    let goods = Goods{
-        id: 1,
-        name: "找保姆".to_string(),
-        descript: "家庭餐饮制作，卫生清洁，照看老人小孩".to_string(),
-        pic: "images/test.jpg".to_string(),
-        price: 35723,
-        isHot: true,
-        isNew: true,
-        gallery: "images/test.jpg,images/test.jpg,images/test.jpg".to_string(),
-        stock: 234,
-        isOnSale: true,
-    };
+// /// 商品页商品信息
+// #[get("/goods/<id>")]
+// pub fn get_goods(id: i32) -> ApiResponse {
+//     let goods = Goods{
+//         id: 1,
+//         name: "找保姆".to_string(),
+//         descript: "家庭餐饮制作，卫生清洁，照看老人小孩".to_string(),
+//         pic: "images/test.jpg".to_string(),
+//         price: 35723,
+//         isHot: true,
+//         isNew: true,
+//         gallery: "images/test.jpg,images/test.jpg,images/test.jpg".to_string(),
+//         stock: 234,
+//         isOnSale: true,
+//     };
 
-    let sku = Sku{
-        collection_id: 1,
-        list: vec![],
-        none_sku: true,
-        price: 23432,
-        stock_num: 234,
-        tree: vec![],
+//     let sku = Sku{
+//         collection_id: 1,
+//         list: vec![],
+//         none_sku: true,
+//         price: 23432,
+//         stock_num: 234,
+//         tree: vec![],
         
-    };
+//     };
 
-    let resp = GoodsResp {
-        goods,
-        sku
-    };
+//     let resp = GoodsResp {
+//         goods,
+//         sku
+//     };
 
-    ApiResponse {
-        json: json!(get_ok_resp(resp)),
-        status: Status::Ok,
-    }
-}
+//     ApiResponse {
+//         json: json!(get_ok_resp(resp)),
+//         status: Status::Ok,
+//     }
+// }
 
 
 
@@ -295,3 +296,19 @@ pub fn get_goods(id: i32) -> ApiResponse {
 // }
 ///////////////////////////////////////// admin router ///////////////////////////////////////////////////////////////////
 
+#[post("/file", data = "<data>")]
+pub fn upload(cont_type: &ContentType, data: MultipartDatas) -> ApiResponse {
+    // 获取用户表单中上传的文件，支持多个文件的上传
+    let mut file_name = String::new();
+    for f in data.files {
+        file_name = f.filename.clone();
+        f.persist(Path::new("static"));
+    }
+    let real_file_name = FileResp {
+        realFileName: file_name.clone()
+    };
+    ApiResponse {
+        json: json!(get_ok_resp(real_file_name)),
+        status: Status::Ok
+    }
+}

@@ -52,55 +52,6 @@ pub struct CategoryList {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct GoodsResp {
-    pub goods: Goods,
-    pub sku: Sku
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Goods {
-    pub id: i32,
-    pub name: String,
-    pub descript: String,
-    pub pic: String,
-    pub price: i32,
-    pub isHot: bool,
-    pub isNew: bool,
-    pub gallery: String,
-    pub stock: i32,
-    pub isOnSale: bool
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Sku {
-    pub collection_id: i32,
-    pub list: Vec<SkuList>,
-    pub none_sku: bool,
-    pub price: i32,
-    pub stock_num: i32,
-    pub tree: Vec<SkuTree>
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct SkuList {
-    pub code: String,
-    pub id: i32,
-    pub price: i32,
-    pub s1: i32,
-    pub s2: i32,
-    pub stock_num: i32,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct SkuTree {
-    pub k: String,
-    pub k_s: String,
-    pub v: Vec<SkuV>
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct SkuV {
-    pub id: i32,
-    pub name: String,
-    pub plain: bool
+pub struct FileResp {
+    pub realFileName: String
 }

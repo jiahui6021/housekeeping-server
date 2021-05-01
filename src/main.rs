@@ -23,7 +23,7 @@ use database::{conn::DbConn};
 
 
 use rocket::{Rocket, http::{RawStr, Cookie}, response::Redirect};
-use crate::{router::routers::*, admin::{account, menu, shop}};
+use crate::{router::routers::*, admin::{account, menu, shop, cart}};
 use rocket_contrib::serve::StaticFiles;
 
 ////////////////////////////////////
@@ -31,14 +31,21 @@ fn rocket() -> Rocket {
 
     rocket::ignite().attach(DbConn::fairing())
     .mount("/",routes![index,retrieve,register,login, pos_service, service, new_post,
-    hot_goods, get_goods, shop::router::get_user_category])
+     shop::router::get_user_category,shop::router::get_goods_user, upload, shop::router::get_hot,
+     shop::router::get_good_info, account::router::loginOrReg])
     .mount("/account", routes![account::router::login_admin
                                     ,account::router::info_admin])
     .mount("/menu", routes![menu::router::list_admin])
     .mount("/shop", routes![shop::router::add_category,
                                   shop::router::get_category,
-                                  shop::router::delete_category])
+                                  shop::router::delete_category,
+                                  shop::router::add_goods,
+                                  shop::router::get_goods_admin,
+                                  shop::router::change_onsale,
+                                  shop::router::get_good])
     .mount("/file", StaticFiles::from("static"))
+    .mount("/cart", routes![cart::router::add_cart])
+    .mount("/user", routes![account::router::get_user_info])
 }
 
 fn main() {

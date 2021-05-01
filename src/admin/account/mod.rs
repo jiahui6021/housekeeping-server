@@ -3,6 +3,7 @@ use models::User;
 
 pub mod models;
 pub mod router;
+pub mod logic;
 
 pub fn check_user_admin(id: i32, conn: &DbConn) -> bool {
     let user = User::from_id(id, &conn);

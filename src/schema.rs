@@ -1,4 +1,14 @@
 table! {
+    cart (id) {
+        id -> Integer,
+        count -> Integer,
+        idGoods -> Integer,
+        idSku -> Nullable<Integer>,
+        user_id -> Nullable<Integer>,
+    }
+}
+
+table! {
     category (id) {
         id -> Integer,
         descript -> Varchar,
@@ -10,6 +20,23 @@ table! {
         isDelete -> Bool,
         sort -> Integer,
         pid -> Nullable<Integer>,
+    }
+}
+
+table! {
+    goods (id) {
+        id -> Integer,
+        name -> Varchar,
+        descript -> Varchar,
+        gallery -> Varchar,
+        pic -> Varchar,
+        detail -> Varchar,
+        price -> Integer,
+        stock -> Integer,
+        idCategory -> Integer,
+        isOnSale -> Bool,
+        isHot -> Bool,
+        isNew -> Bool,
     }
 }
 
@@ -31,6 +58,17 @@ table! {
         street -> Integer,
         name -> Varchar,
         price -> Integer,
+    }
+}
+
+table! {
+    shop_user (id) {
+        id -> Integer,
+        mobile -> Varchar,
+        password -> Varchar,
+        nickName -> Varchar,
+        avatar -> Varchar,
+        gender -> Varchar,
     }
 }
 
@@ -64,9 +102,12 @@ table! {
 }
 
 allow_tables_to_appear_in_same_query!(
+    cart,
     category,
+    goods,
     post,
     service,
+    shop_user,
     user,
     users,
 );
