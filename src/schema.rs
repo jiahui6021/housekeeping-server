@@ -1,4 +1,20 @@
 table! {
+    addr (id) {
+        id -> Integer,
+        idUser -> Integer,
+        addressDetail -> Varchar,
+        areaCode -> Varchar,
+        city -> Varchar,
+        district -> Varchar,
+        isDefault -> Bool,
+        name -> Varchar,
+        postCode -> Varchar,
+        province -> Varchar,
+        tel -> Varchar,
+    }
+}
+
+table! {
     cart (id) {
         id -> Integer,
         count -> Integer,
@@ -102,6 +118,7 @@ table! {
 }
 
 allow_tables_to_appear_in_same_query!(
+    addr,
     cart,
     category,
     goods,

@@ -1,4 +1,4 @@
-use crate::{database::conn::DbConn, schema::{user::{self, dsl}, shop_user}, jwt::JWT};
+use crate::{database::conn::DbConn, schema::{user::{self, dsl}, shop_user, addr}, jwt::JWT};
 use serde::{Deserialize, Serialize};
 use diesel::prelude::*;
 use rocket::{Request, request::{self, FromRequest}, Outcome, http::Status};
@@ -150,4 +150,49 @@ impl ShopUser {
     pub fn generate_token(&self, duration: i64, secret: &str) -> String {
         JWT::new(self.id, duration).to_token(secret).unwrap()
     }
+}
+
+#[derive(Serialize, Deserialize, Default)]
+pub struct AddrFrom {
+    pub id: Option<i32>,
+    pub addressDetail: String,
+    pub areaCode: String,
+    pub city: String,
+    pub district: String,
+    pub isDefault: bool,
+    pub name: String,
+    pub postCode: String,
+    pub province: String,
+    pub tel: String,
+}
+
+
+#[derive(Queryable, Serialize, Deserialize, Default, Clone)]
+pub struct Addr {
+    pub id: i32,
+    pub idUser: i32,
+    pub addressDetail: String,
+    pub areaCode: String,
+    pub city: String,
+    pub district: String,
+    pub isDefault: bool,
+    pub name: String,
+    pub postCode: String,
+    pub province: String,
+    pub tel: String,
+}
+
+#[derive(Insertable, AsChangeset, Serialize, Deserialize, Default, Clone)]
+#[table_name = "addr"]
+pub struct NewAddr {
+    pub idUser: i32,
+    pub addressDetail: String,
+    pub areaCode: String,
+    pub city: String,
+    pub district: String,
+    pub isDefault: bool,
+    pub name: String,
+    pub postCode: String,
+    pub province: String,
+    pub tel: String,
 }

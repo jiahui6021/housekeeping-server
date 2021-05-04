@@ -16,6 +16,13 @@ pub fn get_cart_by_user(user_id: i32, conn: &DbConn) -> Vec<models::Cart> {
         .expect("get cart error")
 }
 
+pub fn get_cart_by_id(id: i32, conn: &DbConn) -> models::Cart {
+    dsl::cart
+        .filter(dsl::id.eq(id))
+        .first::<models::Cart>(&**conn)
+        .expect("get cart error")
+}
+
 pub fn update_cart_count(id: i32, count: i32, conn: &DbConn) {
     diesel::update(dsl::cart.filter(dsl::id.eq(id)))
         .set(dsl::count.eq(count))

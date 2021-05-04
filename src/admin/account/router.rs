@@ -112,3 +112,106 @@ pub fn get_user_info(token_user: TokenUser, conn: DbConn) -> ApiResponse {
 }
 
 
+#[post("/loginByPass?<mobile>&<password>")]
+pub fn login_by_pass(mobile: String, password: String, conn: DbConn) -> ApiResponse {
+    match logic::get_shop_user(&mobile, &conn) {
+        Some(shop_user) => {
+            if shop_user.password.eq(&password) {
+                let resp = ShopUserResp {
+                    token: shop_user.generate_token(69000, ""),
+                    user: shop_user
+                };
+                ApiResponse {
+                    json: json!(get_ok_resp(resp)),
+                    status: Status::Ok,
+                }
+            } else {
+                ApiResponse {
+                    json: json!(""),
+                    status: Status::Forbidden
+                }
+            }
+            
+        }
+        None => {
+            ApiResponse {
+                json: json!(""),
+                status: Status::Forbidden
+            }
+        }
+    }
+}
+
+#[post("/address/save", data = "<data>")]
+pub fn add_addr(token_user: TokenUser, data: Json<AddrFrom>, conn: DbConn) -> ApiResponse {
+    match logic::get_shop_user_by_id(token_user.id, &conn)                                                                                                                                                                                                    {
+        Some(shop_user) => {
+            let new_addr = NewAddr {
+                idUser: token_user.id,
+                addressDetail: data.addressDetail.clone(),
+                areaCode: data.areaCode.clone(),
+                city: data.city.clone(),
+                district: data.district.clone(),
+                isDefault: data.isDefault,
+                name: data.name.clone(),
+                postCode: data.postCode.clone(),
+                province: data.province.clone(),
+                tel: data.tel.clone(),
+            };
+            if data.id.is_some() {
+                logic::modify_addr(data.id, new_addr, &conn);
+            } else {
+                logic::create_addr(&new_addr, &conn);
+            }
+            ApiResponse {
+                json: json!(get_ok_resp("")),
+                status: Status::Ok
+            }
+        
+        }
+        None => {
+            ApiResponse {
+                json: json!(""),
+                status: Status::Forbidden
+            }
+        }
+    }
+}
+
+#[get("/address/queryByUser")]
+pub fn addr_by_user(token_user: TokenUser, conn: DbConn) -> ApiResponse {
+    match logic::get_shop_user_by_id(token_user.id, &conn) {
+        Some(shop_user) => {
+            let resp = logic::get_addr_by_user(token_user.id, &conn).unwrap_or_default();
+            ApiResponse{
+                json: json!(get_ok_resp(resp)),
+                status: Status::Ok,
+            }
+        }
+        None => {
+            ApiResponse{
+                json: json!("鉴权失败"),
+                status: Status::Forbidden,
+            }
+        }
+    }
+}
+
+#[get("/address/<id>")]
+pub fn addr_by_id(token_user: TokenUser, id: i32, conn: DbConn) -> ApiResponse {
+    match logic::get_shop_user_by_id(token_user.id, &conn) {
+        Some(shop_user) => {
+            let resp = logic::get_addr_by_id(id, &conn).unwrap();
+            ApiResponse{
+                json: json!(get_ok_resp(resp)),
+                status: Status::Ok,
+            }
+        }
+        None => {
+            ApiResponse{
+                json: json!("鉴权失败"),
+                status: Status::Forbidden,
+            }
+        }
+    }
+}

@@ -23,7 +23,7 @@ use database::{conn::DbConn};
 
 
 use rocket::{Rocket, http::{RawStr, Cookie}, response::Redirect};
-use crate::{router::routers::*, admin::{account, menu, shop, cart}};
+use crate::{router::routers::*, admin::{account, menu, shop, cart, order}};
 use rocket_contrib::serve::StaticFiles;
 
 ////////////////////////////////////
@@ -32,7 +32,7 @@ fn rocket() -> Rocket {
     rocket::ignite().attach(DbConn::fairing())
     .mount("/",routes![index,retrieve,register,login, pos_service, service, new_post,
      shop::router::get_user_category,shop::router::get_goods_user, upload, shop::router::get_hot,
-     shop::router::get_good_info, account::router::loginOrReg])
+     shop::router::get_good_info, account::router::loginOrReg, account::router::login_by_pass])
     .mount("/account", routes![account::router::login_admin
                                     ,account::router::info_admin])
     .mount("/menu", routes![menu::router::list_admin])
@@ -48,7 +48,11 @@ fn rocket() -> Rocket {
                                     cart::router::add_cart,
                                     cart::router::get_cart,
                                     cart::router::add_cart_count,
-                                    cart::router::del_cart])
+                                    cart::router::del_cart,
+                                    account::router::addr_by_user,
+                                    account::router::add_addr,
+                                    account::router::addr_by_id,
+                                    order::router::prepare])
 }
 
 fn main() {
