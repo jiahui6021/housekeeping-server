@@ -196,3 +196,34 @@ pub struct NewAddr {
     pub province: String,
     pub tel: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct ShopUserList {
+    pub records: Vec<ShopUser>,
+    pub current: i32,
+    pub limit: i32,
+    pub offset: i32,
+    pub pages: i32,
+    pub searchCount: bool,
+    pub size: i32,
+    pub total: i32,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ShopUserInfo {
+    pub cartCount: i32,
+    pub orderCount: i32,
+    pub info: ShopUser,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct AddrList {
+    pub records: Vec<Addr>,
+    pub current: i32,
+    pub limit: i32,
+    pub offset: i32,
+    pub pages: i32,
+    pub searchCount: bool,
+    pub size: i32,
+    pub total: i32,
+}

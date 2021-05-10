@@ -111,6 +111,31 @@ pub fn get_user_info(token_user: TokenUser, conn: DbConn) -> ApiResponse {
     }
 }
 
+#[get("/user/info/<id>")]
+pub fn get_id_user_info(id: i32, conn: DbConn) -> ApiResponse {
+    match logic::get_shop_user_by_id(id, &conn) {
+        Some(shop_user) => {
+            let cartCount = crate::admin::cart::logic::get_cart_by_user(id, &conn).len() as i32;
+            let orderCount = crate::admin::order::logic::get_order_by_user(id, &conn).len() as i32;
+            let resp = ShopUserInfo {
+                cartCount,
+                orderCount,
+                info: shop_user
+            };
+            ApiResponse{
+                json: json!(get_ok_resp(resp)),
+                status: Status::Ok,
+            }
+        }
+        None => {
+            ApiResponse{
+                json: json!("鉴权失败"),
+                status: Status::Forbidden,
+            }
+        }
+    }
+}
+
 
 #[post("/loginByPass?<mobile>&<password>")]
 pub fn login_by_pass(mobile: String, password: String, conn: DbConn) -> ApiResponse {
@@ -212,6 +237,58 @@ pub fn addr_by_id(token_user: TokenUser, id: i32, conn: DbConn) -> ApiResponse {
                 json: json!("鉴权失败"),
                 status: Status::Forbidden,
             }
+        }
+    }
+}
+
+#[get("/user/list?<page>&<limit>&<mobile>")]
+pub fn get_shop_user_admin(token_user: TokenUser, page: i32, limit: i32, mobile: Option<String>, conn: DbConn) -> ApiResponse {
+    if crate::admin::account::check_user_admin(token_user.id, &conn) {
+        let (shop_user, num) = logic::get_shop_user_by_page(page, mobile, limit, &conn).unwrap();
+        let resp = ShopUserList {
+            records: shop_user,
+            current: page,
+            limit,
+            offset: limit,
+            pages: page,
+            searchCount: true,
+            size: limit,
+            total: num,
+        };
+        ApiResponse {
+            json: json!(get_ok_resp(resp)),
+            status: Status::Ok
+        }
+    } else {
+        ApiResponse {
+            json: json!(""),
+            status: Status::Forbidden
+        }
+    }
+}
+
+#[get("/address/list?<page>&<limit>&<idUser>")]
+pub fn get_user_addr_admin(token_user: TokenUser, page: i32, limit: i32, idUser: i32, conn: DbConn) -> ApiResponse {
+    if crate::admin::account::check_user_admin(token_user.id, &conn) {
+        let (shop_user, num) = logic::get_user_addr_by_page(page, None, limit, idUser, &conn).unwrap();
+        let resp = AddrList {
+            records: shop_user,
+            current: page,
+            limit,
+            offset: limit,
+            pages: page,
+            searchCount: true,
+            size: limit,
+            total: num,
+        };
+        ApiResponse {
+            json: json!(get_ok_resp(resp)),
+            status: Status::Ok
+        }
+    } else {
+        ApiResponse {
+            json: json!(""),
+            status: Status::Forbidden
         }
     }
 }

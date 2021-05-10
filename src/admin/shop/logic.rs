@@ -95,10 +95,20 @@ fn get_limit_goods_resp(all_goods: Option<Vec<models::Goods>>, page: i32, limit:
     }
 }
 
-pub fn get_goods_resp_by_page(page: i32, limit: i32, conn: &DbConn) -> Option<(Vec<models::GoodsResp>, i32)> {
-    let all_goods = goods::dsl::goods
-    .load::<models::Goods>(&**conn)
-    .ok();
+pub fn get_goods_resp_by_page(page: i32, limit: i32, name: Option<String>, conn: &DbConn) -> Option<(Vec<models::GoodsResp>, i32)> {
+    let all_goods = match name {
+        Some(name) => {
+            goods::dsl::goods
+            .filter(goods::dsl::name.eq(name))
+            .load::<models::Goods>(&**conn)
+            .ok()
+        }
+        None => {
+            goods::dsl::goods
+            .load::<models::Goods>(&**conn)
+            .ok()
+        }
+    };
     get_limit_goods_resp(all_goods, page, limit, conn)
 }
 

@@ -8,7 +8,8 @@ pub fn create_shop_user(cart: &models::NewShopUser, conn: &DbConn) -> models::Sh
             .execute(&**conn)
             .expect("Error saving new category");
     shop_user::table.order(shop_user::id.desc())
-        .first(&**conn).unwrap()
+        .first(&**conn)
+        .unwrap()
 }
 
 pub fn get_shop_user(mobile: &String, conn: &DbConn) -> Option<models::ShopUser> {
@@ -51,4 +52,81 @@ pub fn modify_addr(id: Option<i32>, addr: models::NewAddr, conn: &DbConn) {
     .set(addr)
     .execute(&**conn)
     .expect("Error update goods");
+}
+
+pub fn get_shop_user_by_page(page: i32, mobile: Option<String>, limit: i32, conn: &DbConn) -> Option<(Vec<models::ShopUser>, i32)> {
+    let all_goods = match mobile {
+        Some(title) => {
+            dsl::shop_user
+            .filter(dsl::mobile.eq(title))
+            .load::<models::ShopUser>(&**conn)
+            .ok()
+        }
+        None => {
+            dsl::shop_user
+            .load::<models::ShopUser>(&**conn)
+            .ok()
+        }
+    };
+    get_limit_shop_user_resp(all_goods, page, limit, conn)
+}
+
+fn get_limit_shop_user_resp(all_goods: Option<Vec<models::ShopUser>>, page: i32, limit: i32, conn: &DbConn) -> Option<(Vec<models::ShopUser>, i32)> {
+    let start = (page - 1) * limit;
+    let end = start + limit -1;
+    let mut resp = Vec::new();
+    match all_goods {
+        Some(all_goods) => {
+            for index in start..end {
+                if let Some(good) = all_goods.get(index as usize){
+                    resp.push(good.clone());
+                }
+            }
+            Some((resp, all_goods.len() as i32))
+        }
+        None => {
+            None
+        }
+    }
+}
+
+pub fn get_user_addr_by_page(page: i32, disabled: Option<bool>, limit: i32, user_id: i32, conn: &DbConn) -> Option<(Vec<models::Addr>, i32)> {
+    let all_goods = match disabled {
+        Some(title) => {
+            // topic::dsl::topic
+            // .filter(topic::dsl::disabled.eq(title))
+            // .load::<models::Topic>(&**conn)
+            // .ok()
+            addr::dsl::addr
+            .filter(addr::dsl::idUser.eq(user_id))
+            .load::<models::Addr>(&**conn)
+            .ok()
+        }
+        None => {
+            addr::dsl::addr
+            .filter(addr::dsl::idUser.eq(user_id))
+            .load::<models::Addr>(&**conn)
+            .ok()
+        }
+    };
+    get_limit_addr_resp(all_goods, page, limit, conn)
+}
+
+fn get_limit_addr_resp(all_goods: Option<Vec<models::Addr>>, page: i32, limit: i32, conn: &DbConn) -> Option<(Vec<models::Addr>, i32)> {
+    let start = (page - 1) * limit;
+    let end = start + limit -1;
+    let mut resp = Vec::new();
+    match all_goods {
+        Some(all_goods) => {
+            for index in start..end {
+                if let Some(good) = all_goods.get(index as usize){
+                    resp.push(good.clone());
+                }
+            }
+            Some((resp, all_goods.len() as i32))
+        }
+        None => {
+            None
+        }
+    }
 }

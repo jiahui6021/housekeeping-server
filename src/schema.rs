@@ -15,12 +15,24 @@ table! {
 }
 
 table! {
+    article (id) {
+        id -> Integer,
+        author -> Varchar,
+        content -> Varchar,
+        idChannel -> Varchar,
+        img -> Varchar,
+        title -> Varchar,
+    }
+}
+
+table! {
     cart (id) {
         id -> Integer,
         count -> Integer,
         idGoods -> Integer,
         idSku -> Nullable<Integer>,
         user_id -> Integer,
+        order_id -> Nullable<Integer>,
     }
 }
 
@@ -57,6 +69,17 @@ table! {
 }
 
 table! {
+    order (id) {
+        id -> Integer,
+        idAddress -> Integer,
+        idUser -> Integer,
+        payId -> Nullable<Integer>,
+        payStatus -> Integer,
+        status -> Integer,
+    }
+}
+
+table! {
     post (id) {
         id -> Integer,
         name -> Varchar,
@@ -85,6 +108,17 @@ table! {
         nickName -> Varchar,
         avatar -> Varchar,
         gender -> Varchar,
+    }
+}
+
+table! {
+    topic (id) {
+        id -> Integer,
+        id_article -> Integer,
+        disabled -> Bool,
+        idGoodsList -> Varchar,
+        pv -> Integer,
+        title -> Varchar,
     }
 }
 
@@ -119,12 +153,15 @@ table! {
 
 allow_tables_to_appear_in_same_query!(
     addr,
+    article,
     cart,
     category,
     goods,
+    order,
     post,
     service,
     shop_user,
+    topic,
     user,
     users,
 );

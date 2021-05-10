@@ -140,9 +140,9 @@ pub fn add_goods(token_user: TokenUser, goods: Json<GoodsForm>, conn: DbConn) ->
     }
 }
 
-#[get("/goods/list?<page>&<limit>")]
-pub fn get_goods_admin(token_user: TokenUser, page: i32, limit: i32, conn: DbConn) -> ApiResponse {
-    if let Some((goods, sum)) = logic::get_goods_resp_by_page(page, limit, &conn) {
+#[get("/goods/list?<page>&<limit>&<name>")]
+pub fn get_goods_admin(token_user: TokenUser, page: i32, limit: i32, name: Option<String>, conn: DbConn) -> ApiResponse {
+    if let Some((goods, sum)) = logic::get_goods_resp_by_page(page, limit, name, &conn) {
         let goods_list = models::GoodsList {
             records: goods,
             current: page,

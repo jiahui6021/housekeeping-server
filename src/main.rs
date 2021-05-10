@@ -16,6 +16,7 @@ mod router;
 mod admin;
 mod models;
 mod jwt;
+mod util;
 //mod logic;
 
 use database::{conn::DbConn};
@@ -23,7 +24,7 @@ use database::{conn::DbConn};
 
 
 use rocket::{Rocket, http::{RawStr, Cookie}, response::Redirect};
-use crate::{router::routers::*, admin::{account, menu, shop, cart, order}};
+use crate::{router::routers::*, admin::{account, menu, shop, cart, order, topic}};
 use rocket_contrib::serve::StaticFiles;
 
 ////////////////////////////////////
@@ -32,7 +33,9 @@ fn rocket() -> Rocket {
     rocket::ignite().attach(DbConn::fairing())
     .mount("/",routes![index,retrieve,register,login, pos_service, service, new_post,
      shop::router::get_user_category,shop::router::get_goods_user, upload, shop::router::get_hot,
-     shop::router::get_good_info, account::router::loginOrReg, account::router::login_by_pass])
+     shop::router::get_good_info, account::router::loginOrReg, account::router::login_by_pass,
+     order::router::pay_order, topic::router::post_article, topic::router::get_article, topic::router::get_id_article,
+     topic::router::del_id_topic, topic::router::get_all_topic, topic::router::get_id_topic])
     .mount("/account", routes![account::router::login_admin
                                     ,account::router::info_admin])
     .mount("/menu", routes![menu::router::list_admin])
@@ -42,7 +45,11 @@ fn rocket() -> Rocket {
                                   shop::router::add_goods,
                                   shop::router::get_goods_admin,
                                   shop::router::change_onsale,
-                                  shop::router::get_good])
+                                  shop::router::get_good,
+                                  order::router::get_order_admin,
+                                  account::router::get_shop_user_admin,
+                                  account::router::get_id_user_info,
+                                  account::router::get_user_addr_admin])
     .mount("/file", StaticFiles::from("static"))
     .mount("/user", routes![account::router::get_user_info,
                                     cart::router::add_cart,
@@ -52,7 +59,11 @@ fn rocket() -> Rocket {
                                     account::router::addr_by_user,
                                     account::router::add_addr,
                                     account::router::addr_by_id,
-                                    order::router::prepare])
+                                    order::router::prepare,
+                                    order::router::save_order,
+                                    order::router::get_order,
+                                    order::router::get_id_order])
+    .mount("/promotion", routes![topic::router::post_topic, topic::router::get_topic])
 }
 
 fn main() {

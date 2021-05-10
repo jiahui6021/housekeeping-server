@@ -12,6 +12,7 @@ pub struct Cart {
     pub idGoods: i32,
     pub idSku: Option<i32>,
     pub user_id: i32,
+    pub order_id: Option<i32>,
 }
 
 #[derive(Insertable, AsChangeset, Serialize, Deserialize, Default)]
@@ -52,5 +53,6 @@ pub struct CartResp {
     pub price: i32,
     pub sku: Option<String>,
     pub title: String,
-    pub goods: GoodsResp
+    pub goods: GoodsResp,
+    pub totalPrice: i32,
 }

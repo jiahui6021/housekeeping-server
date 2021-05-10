@@ -23,6 +23,13 @@ pub fn get_cart_by_id(id: i32, conn: &DbConn) -> models::Cart {
         .expect("get cart error")
 }
 
+pub fn get_cart_by_order(id: i32, conn: &DbConn) -> Option<Vec<models::Cart>> {
+    dsl::cart
+        .filter(dsl::order_id.eq(id))
+        .load::<models::Cart>(&**conn)
+        .ok()
+}
+
 pub fn update_cart_count(id: i32, count: i32, conn: &DbConn) {
     diesel::update(dsl::cart.filter(dsl::id.eq(id)))
         .set(dsl::count.eq(count))
@@ -53,10 +60,17 @@ pub fn get_cart_resp(carts: Vec<models::Cart>, idUser: i32, conn: &DbConn) -> Ve
             price: good.price,
             sku: None,
             title: good.name.clone(),
-            goods: crate::shop::models::GoodsResp::from_goods(good, conn),
-            count: cart.count
+            goods: crate::shop::models::GoodsResp::from_goods(good.clone(), conn),
+            count: cart.count,
+            totalPrice: good.price*cart.count,
         };
         resp.push(cart_resp);
     }
     resp
+}
+
+pub fn add_order_id(id_cart: i32, id: i32, conn: &DbConn) {
+    diesel::update(dsl::cart.filter(dsl::id.eq(id_cart)))
+        .set(dsl::order_id.eq(id))
+        .execute(&**conn);
 }
