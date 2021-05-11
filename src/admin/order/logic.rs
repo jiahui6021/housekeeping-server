@@ -93,3 +93,10 @@ pub fn update_order_pay(orderSn: i32, conn: &DbConn) {
     .execute(&**conn)
     .expect("Error update goods");
 }
+
+pub fn update_order_status(orderSn: i32, status: i32, conn: &DbConn) {
+    diesel::update(dsl::order.filter(dsl::id.eq(orderSn)))
+    .set(dsl::status.eq(status))
+    .execute(&**conn)
+    .expect("Error update goods");
+}

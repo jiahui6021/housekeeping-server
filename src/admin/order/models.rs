@@ -83,6 +83,12 @@ impl OrderResp {
             2 => {
                 "待发货".to_string()
             }
+            3 => {
+                "已发货".to_string()
+            }
+            4 => {
+                "已完成".to_string()
+            }
             _ => {
                 "其他".to_string()
             }

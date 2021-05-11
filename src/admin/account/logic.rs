@@ -130,3 +130,24 @@ fn get_limit_addr_resp(all_goods: Option<Vec<models::Addr>>, page: i32, limit: i
         }
     }
 }
+
+pub fn update_user_name(user_id: i32, name: String, conn: &DbConn) {
+    diesel::update(shop_user::dsl::shop_user.filter(shop_user::dsl::id.eq(user_id)))
+    .set(shop_user::dsl::nickName.eq(name))
+    .execute(&**conn)
+    .expect("Error update user name");
+}
+
+pub fn update_user_sex(user_id: i32, sex: String, conn: &DbConn) {
+    diesel::update(shop_user::dsl::shop_user.filter(shop_user::dsl::id.eq(user_id)))
+    .set(shop_user::dsl::gender.eq(sex))
+    .execute(&**conn)
+    .expect("Error update user sex");
+}
+
+pub fn update_user_pass(user_id: i32, pass: String, conn: &DbConn) {
+    diesel::update(shop_user::dsl::shop_user.filter(shop_user::dsl::id.eq(user_id)))
+    .set(shop_user::dsl::password.eq(pass))
+    .execute(&**conn)
+    .expect("Error update user pass");
+}

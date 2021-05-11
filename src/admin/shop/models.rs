@@ -1,4 +1,4 @@
-use crate::{database::conn::DbConn, schema::{category::{self, dsl}, goods}, jwt::JWT};
+use crate::{database::conn::DbConn, schema::{category::{self, dsl}, goods, banner, cat_banner, like}, jwt::JWT};
 use serde::{Deserialize, Serialize};
 use diesel::prelude::*;
 use rocket::{Request, request::{self, FromRequest}, Outcome, http::Status};
@@ -23,8 +23,7 @@ pub struct CategoryResp {
 impl CategoryResp {
     pub fn from_muti(categorys: Vec<Category>, conn: &DbConn) -> Vec<Self> {
         categorys.into_iter().map(|category|{
-            let id = category.id;
-            let banners = vec![];
+            let banners = super::logic::get_banner_by_cat(category.id, conn);
             CategoryResp {
                 children: vec![],
                 bannerList: banners,
@@ -44,17 +43,6 @@ impl CategoryResp {
     }
 }
 
-#[derive(Serialize, Deserialize, Default)]
-pub struct Banner {
-    pub id: i32,
-    pub idFile: String,
-    pub page: String,
-    pub param: String,
-    pub title: String,
-    pub r#type: String,
-    pub url: String,
-}
-
 #[derive(Queryable, AsChangeset, Serialize, Deserialize, Default, Clone)]
 #[table_name = "category"]
 pub struct Category {
@@ -64,6 +52,7 @@ pub struct Category {
     pub url: String,
     pub label: String,
     pub name: String,
+    pub banner_id: String,
     pub showIndex: bool,
     pub isDelete: bool,
     pub sort: i32,
@@ -78,6 +67,7 @@ pub struct NewCategory {
     pub url: String,
     pub label: String,
     pub name: String,
+    pub banner_id: String,
     pub showIndex: bool,
     pub isDelete: bool,
     pub sort: i32,
@@ -230,3 +220,58 @@ pub struct SkuV {
     pub plain: bool
 }
 
+#[derive(Queryable, AsChangeset, Serialize, Deserialize, Clone, Default)]
+#[table_name = "banner"]
+pub struct Banner {
+    pub id: i32,
+    pub idFile: String,
+    pub page: String,
+    pub param: String,
+    pub title: String,
+}
+
+#[derive(Insertable, AsChangeset, Serialize, Deserialize, Clone, Default)]
+#[table_name = "banner"]
+pub struct NewBanner {
+    pub idFile: String,
+    pub page: String,
+    pub param: String,
+    pub title: String,
+}
+
+#[derive(Queryable, AsChangeset, Serialize, Deserialize, Clone, Default)]
+#[table_name = "cat_banner"]
+pub struct CarBanner {
+    pub id: i32,
+    pub car_id: i32,
+    pub banner_id: i32,
+}
+
+#[derive(Insertable, AsChangeset, Serialize, Deserialize, Clone, Default)]
+#[table_name = "cat_banner"]
+pub struct NewCarBanner {
+    pub car_id: i32,
+    pub banner_id: i32,
+}
+
+#[derive(Queryable, AsChangeset, Serialize, Deserialize, Clone, Default)]
+#[table_name = "like"]
+pub struct Like {
+    pub id: i32,
+    pub user_id: i32,
+    pub goods_id: i32,
+}
+
+#[derive(Insertable, AsChangeset, Serialize, Deserialize, Clone, Default)]
+#[table_name = "like"]
+pub struct NewLike {
+    pub user_id: i32,
+    pub goods_id: i32,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct LikeGoods {
+    pub id: i32,
+    pub idGoods: i32,
+    pub goods: GoodsResp
+}

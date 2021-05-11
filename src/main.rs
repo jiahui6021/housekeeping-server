@@ -35,9 +35,11 @@ fn rocket() -> Rocket {
      shop::router::get_user_category,shop::router::get_goods_user, upload, shop::router::get_hot,
      shop::router::get_good_info, account::router::loginOrReg, account::router::login_by_pass,
      order::router::pay_order, topic::router::post_article, topic::router::get_article, topic::router::get_id_article,
-     topic::router::del_id_topic, topic::router::get_all_topic, topic::router::get_id_topic])
+     topic::router::del_id_topic, topic::router::get_all_topic, topic::router::get_id_topic, shop::router::add_banner,
+     shop::router::get_banner, shop::router::get_new, shop::router::get_goods_key, account::router::logout_user])
     .mount("/account", routes![account::router::login_admin
-                                    ,account::router::info_admin])
+                                    ,account::router::info_admin,
+                                    account::router::logout])
     .mount("/menu", routes![menu::router::list_admin])
     .mount("/shop", routes![shop::router::add_category,
                                   shop::router::get_category,
@@ -49,7 +51,11 @@ fn rocket() -> Rocket {
                                   order::router::get_order_admin,
                                   account::router::get_shop_user_admin,
                                   account::router::get_id_user_info,
-                                  account::router::get_user_addr_admin])
+                                  account::router::get_user_addr_admin,
+                                  shop::router::set_banner,
+                                  shop::router::get_id_banner,
+                                  shop::router::remove_banner,
+                                  order::router::send_out])
     .mount("/file", StaticFiles::from("static"))
     .mount("/user", routes![account::router::get_user_info,
                                     cart::router::add_cart,
@@ -62,7 +68,14 @@ fn rocket() -> Rocket {
                                     order::router::prepare,
                                     order::router::save_order,
                                     order::router::get_order,
-                                    order::router::get_id_order])
+                                    order::router::get_id_order,
+                                    shop::router::add_favorite,
+                                    shop::router::get_favorite,
+                                    shop::router::del_like,
+                                    order::router::confirm,
+                                    account::router::update_user_name,
+                                    account::router::update_user_sex,
+                                    account::router::update_user_pass])
     .mount("/promotion", routes![topic::router::post_topic, topic::router::get_topic])
 }
 

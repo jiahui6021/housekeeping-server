@@ -26,6 +26,16 @@ table! {
 }
 
 table! {
+    banner (id) {
+        id -> Integer,
+        idFile -> Varchar,
+        page -> Varchar,
+        param -> Varchar,
+        title -> Varchar,
+    }
+}
+
+table! {
     cart (id) {
         id -> Integer,
         count -> Integer,
@@ -37,6 +47,14 @@ table! {
 }
 
 table! {
+    cat_banner (id) {
+        id -> Integer,
+        car_id -> Integer,
+        banner_id -> Integer,
+    }
+}
+
+table! {
     category (id) {
         id -> Integer,
         descript -> Varchar,
@@ -44,6 +62,7 @@ table! {
         url -> Varchar,
         label -> Varchar,
         name -> Varchar,
+        banner_id -> Varchar,
         showIndex -> Bool,
         isDelete -> Bool,
         sort -> Integer,
@@ -65,6 +84,14 @@ table! {
         isOnSale -> Bool,
         isHot -> Bool,
         isNew -> Bool,
+    }
+}
+
+table! {
+    like (id) {
+        id -> Integer,
+        user_id -> Integer,
+        goods_id -> Integer,
     }
 }
 
@@ -154,9 +181,12 @@ table! {
 allow_tables_to_appear_in_same_query!(
     addr,
     article,
+    banner,
     cart,
+    cat_banner,
     category,
     goods,
+    like,
     order,
     post,
     service,

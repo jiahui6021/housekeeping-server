@@ -123,3 +123,21 @@ pub fn pay_order(token_user: TokenUser, orderSn: i32, conn: DbConn) -> ApiRespon
         status: Status::Ok
     }
 }
+
+#[post("/order/sendOut/<id>?<idExpress>&<shippingSn>")]
+pub fn send_out(token_user: TokenUser, id: i32, idExpress: Option<String>, shippingSn: Option<String>, conn: DbConn) -> ApiResponse {
+    logic::update_order_status(id, 3, &conn);
+    ApiResponse {
+        json: json!(get_ok_resp("成功")),
+        status: Status::Ok
+    }
+}
+
+#[post("/order/confirm/<id>")]
+pub fn confirm(token_user: TokenUser, id: i32, conn: DbConn) -> ApiResponse {
+    logic::update_order_status(id, 4, &conn);
+    ApiResponse {
+        json: json!(get_ok_resp("成功")),
+        status: Status::Ok
+    }
+}

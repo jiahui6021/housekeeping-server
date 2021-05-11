@@ -292,3 +292,57 @@ pub fn get_user_addr_admin(token_user: TokenUser, page: i32, limit: i32, idUser:
         }
     }
 }
+
+#[post("/logout")]
+pub fn logout(conn: DbConn) -> ApiResponse {
+    ApiResponse{
+        json: json!(get_ok_resp("成功")),
+        status: Status::Ok,
+    }
+}
+
+#[post("/logout")]
+pub fn logout_user(conn: DbConn) -> ApiResponse {
+    ApiResponse{
+        json: json!(get_ok_resp("成功")),
+        status: Status::Ok,
+    }
+}
+
+#[post("/updateUserName/<name>")]
+pub fn update_user_name(token_user: TokenUser, name: String, conn: DbConn) -> ApiResponse {
+    logic::update_user_name(token_user.id, name, &conn);
+    let resp = logic::get_shop_user_by_id(token_user.id, &conn).unwrap();
+    ApiResponse{
+        json: json!(get_ok_resp(resp)),
+        status: Status::Ok,
+    }
+}
+
+#[post("/updateGender/<data>")]
+pub fn update_user_sex(token_user: TokenUser, data: String, conn: DbConn) -> ApiResponse {
+    logic::update_user_sex(token_user.id, data, &conn);
+    let resp = logic::get_shop_user_by_id(token_user.id, &conn).unwrap();
+    ApiResponse{
+        json: json!(get_ok_resp(resp)),
+        status: Status::Ok,
+    }
+}
+
+#[post("/updatePassword/<old>/<new>/<newa>")]
+pub fn update_user_pass(token_user: TokenUser, old: String, new: String, newa: String, conn: DbConn) -> ApiResponse {
+    let shop_user = logic::get_shop_user_by_id(token_user.id, &conn).unwrap();
+    if shop_user.password.eq(&old) {
+        logic::update_user_pass(token_user.id, new, &conn);
+        let resp = logic::get_shop_user_by_id(token_user.id, &conn).unwrap();
+        return ApiResponse{
+            json: json!(get_ok_resp(resp)),
+            status: Status::Ok,
+        };
+    }
+    ApiResponse{
+        json: json!(get_ok_resp("密码错误")),
+        status: Status::Forbidden,
+    }
+}
+

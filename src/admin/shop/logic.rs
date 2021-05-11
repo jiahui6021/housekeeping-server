@@ -1,4 +1,4 @@
-use crate::{database::conn::DbConn, schema::{category::{self, dsl}, goods}, jwt::JWT};
+use crate::{database::conn::DbConn, schema::{category::{self, dsl}, goods, banner, cat_banner, like}, jwt::JWT};
 use super::models;
 use diesel::prelude::*;
 ///////////////////// category /////////////////////
@@ -39,7 +39,7 @@ pub fn update_category_by_id(id: Option<i32>, category: models::NewCategory, con
                     isDelete: category.isDelete,
                     sort: category.sort,
                     pid: category.pid,
-                    
+                    banner_id: category.banner_id
                 };
                 update_category(new_category, conn);
                 true
@@ -59,6 +59,17 @@ pub fn update_category(new_category: models::Category, conn: &DbConn) {
     .set(new_category)
     .execute(&**conn)
     .expect("Error update category");
+}
+
+pub fn update_category_banner(id: i32, banner_id: i32, conn: &DbConn) {
+    let new_cat_banner = models::NewCarBanner {
+        car_id: id,
+        banner_id: banner_id,
+    };
+    diesel::insert_into(cat_banner::table)
+            .values(&new_cat_banner)
+            .execute(&**conn)
+            .expect("Error saving new cat banner");
 }
 
 pub fn delete_category_by_id(id: i32, conn: &DbConn) {
@@ -112,9 +123,32 @@ pub fn get_goods_resp_by_page(page: i32, limit: i32, name: Option<String>, conn:
     get_limit_goods_resp(all_goods, page, limit, conn)
 }
 
+pub fn get_like_goods_by_like(likes: Vec<models::Like>, conn: &DbConn) -> Vec<models::LikeGoods> {
+    likes.iter().map(|like|{
+        let good = goods::dsl::goods
+        .filter(goods::dsl::id.eq(like.id))
+        .first::<models::Goods>(&**conn)
+        .unwrap();
+        models::LikeGoods{
+            id: like.id,
+            idGoods: good.id,
+            goods: models::GoodsResp::from_goods(good, conn),
+        }
+    }).collect()
+}
+
 pub fn get_category_goods_resp_by_page(page: i32, limit: i32, category: i32, conn: &DbConn) -> Option<(Vec<models::GoodsResp>, i32)> {
     let all_goods = goods::dsl::goods
     .filter(goods::dsl::idCategory.eq(category))
+    .filter(goods::dsl::isOnSale.eq(true))
+    .load::<models::Goods>(&**conn)
+    .ok();
+    get_limit_goods_resp(all_goods, page, limit, conn)
+}
+
+pub fn get_key_goods_resp_by_page(page: i32, limit: i32, key: String, conn: &DbConn) -> Option<(Vec<models::GoodsResp>, i32)> {
+    let all_goods = goods::dsl::goods
+    .filter(goods::dsl::name.eq(key))
     .filter(goods::dsl::isOnSale.eq(true))
     .load::<models::Goods>(&**conn)
     .ok();
@@ -179,4 +213,90 @@ pub fn get_hot_goods(conn: &DbConn) -> Option<Vec<models::Goods>> {
         .filter(goods::dsl::isHot.eq(true))
         .load::<models::Goods>(&**conn)
         .ok()
+}
+
+pub fn get_new_goods(conn: &DbConn) -> Option<Vec<models::Goods>> {
+    goods::dsl::goods
+        .filter(goods::dsl::isNew.eq(true))
+        .load::<models::Goods>(&**conn)
+        .ok()
+}
+
+///////////////////////////////////////// banner
+pub fn create_banner(banner: models::NewBanner, conn: &DbConn) {
+    diesel::insert_into(banner::table)
+            .values(&banner)
+            .execute(&**conn)
+            .expect("Error saving new banner");
+}
+
+pub fn get_banner(conn: &DbConn)-> Option<Vec<models::Banner>> {
+    banner::dsl::banner
+    .load::<models::Banner>(&**conn)
+    .ok()
+}
+
+pub fn get_banner_by_id(id: i32, conn: &DbConn) -> models::Banner {
+    banner::dsl::banner
+    .filter(banner::dsl::id.eq(id))
+    .first::<models::Banner>(&**conn)
+    .unwrap()
+}
+
+pub fn get_banner_by_ids(ids: Vec<i32>, conn: &DbConn) -> Vec<models::Banner> {
+    let mut resp = Vec::new();
+    for id in ids {
+        resp.push(get_banner_by_id(id, conn));
+    }
+    resp
+}
+
+pub fn delete_category_banner(car_id: i32, banner_id: i32, conn: &DbConn) {
+    diesel::delete(cat_banner::table)
+    .filter(cat_banner::dsl::banner_id.eq(banner_id))
+    .filter(cat_banner::dsl::car_id.eq(car_id))
+    .execute(&**conn)
+    .expect("Error delete car_banner");
+}
+
+pub fn get_banner_by_cat(cat_id: i32, conn: &DbConn) -> Vec<models::Banner> {
+    let cat_banners = cat_banner::dsl::cat_banner
+    .filter(cat_banner::dsl::car_id.eq(cat_id))
+    .load::<models::CarBanner>(&**conn)
+    .unwrap();
+    let mut banners = Vec::new();
+    for car_banner in cat_banners {
+        let banner = get_banner_by_id(car_banner.banner_id, conn);
+        banners.push(banner);
+    }
+    banners
+}
+
+////////////////////////////////////////////// like
+
+pub fn create_like(new_like: models::NewLike, conn: &DbConn) {
+    diesel::insert_into(like::table)
+            .values(&new_like)
+            .execute(&**conn)
+            .expect("Error saving new like");
+}
+
+pub fn get_like_by_user(user_id: i32, conn: &DbConn) -> Vec<models::Like> {
+    like::dsl::like
+    .filter(like::dsl::user_id.eq(user_id))
+    .load::<models::Like>(&**conn)
+    .unwrap()
+}
+
+pub fn del_like(user_id: i32, mut goods_id: String, conn: &DbConn) {
+    goods_id.remove(goods_id.len()-1);
+    goods_id.remove(0);
+    let ids = crate::util::split_string_to_i32_vec(goods_id);
+    for id in ids {
+        diesel::delete(like::table)
+        .filter(like::dsl::user_id.eq(user_id))
+        .filter(like::dsl::goods_id.eq(id))
+        .execute(&**conn)
+        .expect("Error delete like");
+    }
 }
