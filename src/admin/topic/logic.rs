@@ -128,3 +128,17 @@ pub fn get_id_topic(id: i32, conn: &DbConn) -> Option<models::Topic> {
     .first::<models::Topic>(&**conn)
     .ok()
 }
+
+pub fn del_id_topic(id: i32, conn: &DbConn) {
+    diesel::delete(topic::dsl::topic.filter(topic::dsl::id.eq(id)))
+    .execute(&**conn)
+    .expect("Error delete topic");
+}
+
+
+pub fn change_topic_disabled(id: i32, disabled: bool, conn: &DbConn) {
+    diesel::update(topic::dsl::topic.filter(topic::dsl::disabled.eq(disabled)))
+    .set(topic::dsl::disabled.eq(disabled))
+    .execute(&**conn)
+    .expect("Error update article");
+}

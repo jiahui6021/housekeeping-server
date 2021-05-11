@@ -31,12 +31,32 @@ use rocket_contrib::serve::StaticFiles;
 fn rocket() -> Rocket {
 
     rocket::ignite().attach(DbConn::fairing())
-    .mount("/",routes![index,retrieve,register,login, pos_service, service, new_post,
-     shop::router::get_user_category,shop::router::get_goods_user, upload, shop::router::get_hot,
-     shop::router::get_good_info, account::router::loginOrReg, account::router::login_by_pass,
-     order::router::pay_order, topic::router::post_article, topic::router::get_article, topic::router::get_id_article,
-     topic::router::del_id_topic, topic::router::get_all_topic, topic::router::get_id_topic, shop::router::add_banner,
-     shop::router::get_banner, shop::router::get_new, shop::router::get_goods_key, account::router::logout_user])
+    .mount("/",routes![index,
+                            retrieve,
+                            register,
+                            login, 
+                            pos_service, 
+                            service, 
+                            new_post,
+                            shop::router::get_user_category,
+                            shop::router::get_goods_user, 
+                            upload, 
+                            shop::router::get_hot,
+                            shop::router::get_good_info, 
+                            account::router::loginOrReg, 
+                            account::router::login_by_pass,
+                            order::router::pay_order, 
+                            topic::router::post_article, 
+                            topic::router::get_article, 
+                            topic::router::get_id_article,
+                            topic::router::del_id_article, 
+                            topic::router::get_all_topic, 
+                            topic::router::get_id_topic, 
+                            shop::router::add_banner,
+                            shop::router::get_banner, 
+                            shop::router::get_new, 
+                            shop::router::get_goods_key, 
+                            account::router::logout_user])
     .mount("/account", routes![account::router::login_admin
                                     ,account::router::info_admin,
                                     account::router::logout])
@@ -75,8 +95,9 @@ fn rocket() -> Rocket {
                                     order::router::confirm,
                                     account::router::update_user_name,
                                     account::router::update_user_sex,
-                                    account::router::update_user_pass])
-    .mount("/promotion", routes![topic::router::post_topic, topic::router::get_topic])
+                                    account::router::update_user_pass,
+                                    topic::router::change_topic_able])
+    .mount("/promotion", routes![topic::router::post_topic, topic::router::get_topic, topic::router::del_id_topic,])
 }
 
 fn main() {

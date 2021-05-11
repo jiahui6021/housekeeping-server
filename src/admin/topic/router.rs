@@ -85,7 +85,7 @@ pub fn get_id_article(id: i32, conn: DbConn) -> ApiResponse {
 }
 
 #[delete("/article?<id>")]
-pub fn del_id_topic(id: i32, conn: DbConn) -> ApiResponse {
+pub fn del_id_article(id: i32, conn: DbConn) -> ApiResponse {
     logic::del_article_by_id(id, &conn); 
     ApiResponse {
         json: json!(get_ok_resp("")),
@@ -176,3 +176,27 @@ pub fn get_id_topic(id: i32, conn: DbConn) -> ApiResponse {
         }
     }
 }
+
+#[delete("/topic?<id>")]
+pub fn del_id_topic(id: i32, conn: DbConn) -> ApiResponse {
+    logic::del_id_topic(id, &conn);
+    ApiResponse {
+        json: json!(get_ok_resp("")),
+        status: Status::Ok
+    }
+}
+
+#[post("/topic/changeDisabled?<id>&<disabled>")]
+pub fn change_topic_able(id: i32, disabled: String, conn: DbConn) -> ApiResponse {
+    let disabled = if disabled.eq("true") {
+        true
+    } else {
+        false
+    };
+    logic::change_topic_disabled(id, disabled, &conn);
+    ApiResponse {
+        json: json!(get_ok_resp("")),
+        status: Status::Ok
+    }
+}
+
