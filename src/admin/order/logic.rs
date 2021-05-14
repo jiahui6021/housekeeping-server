@@ -22,7 +22,7 @@ pub fn create_order(order: models::NewOrder, conn: &DbConn) -> i32 {
             .unwrap().id
 }
 
-pub fn create_new_order(id_carts: Vec<i32>, id_user: i32, id_addr: i32, conn: &DbConn) {
+pub fn create_new_order(id_carts: Vec<i32>, id_user: i32, id_addr: i32, conn: &DbConn) -> models::OrderResp {
     let new_order = models::NewOrder {
         idAddress: id_addr,
         idUser: id_user,
@@ -34,6 +34,7 @@ pub fn create_new_order(id_carts: Vec<i32>, id_user: i32, id_addr: i32, conn: &D
     for id_cart in id_carts {
         crate::admin::cart::logic::add_order_id(id_cart, id, conn);
     }
+    get_order_resp_by_id(id, conn)
 }
 
 pub fn get_order_by_range(page: i32, limit: i32, status: Option<i32>, conn: &DbConn) -> Option<(Vec<models::OrderResp>, i32)> {
@@ -55,6 +56,7 @@ pub fn get_order_by_range(page: i32, limit: i32, status: Option<i32>, conn: &DbC
 
 pub fn get_order_resp_by_id(id: i32, conn: &DbConn) -> models::OrderResp {
     let order = dsl::order
+    .filter(dsl::id.eq(id))
     .first::<models::Order>(&**conn)
     .unwrap();
     models::OrderResp::from_order(order, conn)

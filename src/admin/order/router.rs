@@ -34,9 +34,9 @@ pub fn prepare(token_user: TokenUser, chosenAddressId: Option<i32>, idCarts : St
 pub fn save_order(token_user: TokenUser, idAddress: i32, message: String, idCarts: String, conn: DbConn) -> ApiResponse {
     if crate::admin::account::check_user_admin(token_user.id, &conn) {
         let id_carts = crate::util::split_string_to_i32_vec(idCarts);
-        logic::create_new_order(id_carts, idAddress, token_user.id, &conn);
+        let order_resp = logic::create_new_order(id_carts, idAddress, token_user.id, &conn);
         ApiResponse {
-            json: json!(get_ok_resp("")),
+            json: json!(get_ok_resp(order_resp)),
             status: Status::Ok
         }
     } else {

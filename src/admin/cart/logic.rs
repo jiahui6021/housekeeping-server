@@ -66,6 +66,7 @@ pub fn get_cart_resp(carts: Vec<models::Cart>, idUser: i32, conn: &DbConn) -> Ve
         };
         resp.push(cart_resp);
     }
+    //assert_eq!(resp.len(), 23);
     resp
 }
 
