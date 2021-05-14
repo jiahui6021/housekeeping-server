@@ -103,6 +103,8 @@ table! {
         payId -> Nullable<Integer>,
         payStatus -> Integer,
         status -> Integer,
+        date -> Varchar,
+        time -> Varchar,
     }
 }
 

@@ -93,6 +93,7 @@ fn rocket() -> Rocket {
                                     shop::router::get_favorite,
                                     shop::router::del_like,
                                     order::router::confirm,
+                                    order::router::cancel,
                                     account::router::update_user_name,
                                     account::router::update_user_sex,
                                     account::router::update_user_pass,

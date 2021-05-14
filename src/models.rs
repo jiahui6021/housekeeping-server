@@ -31,3 +31,11 @@ pub fn get_ok_resp<T>(data: T) -> ApiJson<T> {
         data
     }
 }
+
+pub fn get_err_resp<T>(data: T, msg: String) -> ApiJson<T> {
+    ApiJson {
+        code: 9999,
+        msg,
+        data
+    }
+}

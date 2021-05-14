@@ -22,13 +22,15 @@ pub fn create_order(order: models::NewOrder, conn: &DbConn) -> i32 {
             .unwrap().id
 }
 
-pub fn create_new_order(id_carts: Vec<i32>, id_user: i32, id_addr: i32, conn: &DbConn) -> models::OrderResp {
+pub fn create_new_order(id_carts: Vec<i32>, id_addr: i32, date: String, time: String, id_user: i32,  conn: &DbConn) -> models::OrderResp {
     let new_order = models::NewOrder {
         idAddress: id_addr,
         idUser: id_user,
         payId: None,
         payStatus: 1,
         status: 1,
+        date,
+        time,
     };
     let id = create_order(new_order, conn);
     for id_cart in id_carts {
@@ -91,7 +93,7 @@ fn get_limit_order_resp(all_goods: Option<Vec<models::Order>>, page: i32, limit:
 
 pub fn update_order_pay(orderSn: i32, conn: &DbConn) {
     diesel::update(dsl::order.filter(dsl::id.eq(orderSn)))
-    .set(dsl::payStatus.eq(2))
+    .set(dsl::status.eq(2))
     .execute(&**conn)
     .expect("Error update goods");
 }

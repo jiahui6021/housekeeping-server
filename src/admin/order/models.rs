@@ -19,6 +19,8 @@ pub struct Order {
     pub payId: Option<i32>,
     pub payStatus: i32,
     pub status: i32,
+    pub date: String,
+    pub time: String,
 }
 
 #[derive(Insertable, Serialize, Deserialize, Default, Clone)]
@@ -29,6 +31,8 @@ pub struct NewOrder {
     pub payId: Option<i32>,
     pub payStatus: i32,
     pub status: i32,
+    pub date: String,
+    pub time: String
 }
 
 #[derive(Serialize, Deserialize)]
@@ -64,6 +68,8 @@ pub struct OrderResp {
     pub statusName: String,
     pub totalPrice: i32,
     pub user: crate::admin::account::models::ShopUser,
+    pub date: String,
+    pub time: String,
 }
 
 impl OrderResp {
@@ -81,23 +87,29 @@ impl OrderResp {
                 "待付款".to_string()
             }
             2 => {
-                "待发货".to_string()
+                "待服务".to_string()
             }
             3 => {
-                "已发货".to_string()
+                "服务中".to_string()
             }
             4 => {
                 "已完成".to_string()
+            }
+            5 => {
+                "已取消".to_string()
             }
             _ => {
                 "其他".to_string()
             }
         };
 
-
+        let mut all_addr = addr.province;
+        all_addr.push_str(&addr.city);
+        all_addr.push_str(&addr.district);
+        all_addr.push_str(&addr.addressDetail);
         Self {
             consignee: user.nickName.clone(),
-            consigneeAddress: addr.province,
+            consigneeAddress: all_addr,
             createTime: "".to_string(),
             id: order.id,
             idAddress: order.idAddress,
@@ -115,6 +127,8 @@ impl OrderResp {
             statusName,
             totalPrice: total_price,
             user,
+            date: order.date.clone(),
+            time: order.time.clone()
         }
     }
 }

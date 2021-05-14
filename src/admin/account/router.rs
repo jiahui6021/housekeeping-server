@@ -4,7 +4,7 @@ use rocket::{Rocket, data, http::{RawStr, Cookie, Cookies, Status, ContentType},
 use std::{collections::HashMap, str::FromStr};
 use serde::{Deserialize, Serialize};
 use rocket_contrib::json::{Json, JsonValue};
-use crate::{database::conn::DbConn, models::{ApiResponse, get_ok_resp}};
+use crate::{database::conn::DbConn, models::{ApiResponse, get_ok_resp, get_err_resp}};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Token {
@@ -152,16 +152,16 @@ pub fn login_by_pass(mobile: String, password: String, conn: DbConn) -> ApiRespo
                 }
             } else {
                 ApiResponse {
-                    json: json!(""),
-                    status: Status::Forbidden
+                    json: json!(get_err_resp("", "账号或密码错误".to_string())),
+                    status: Status::Ok
                 }
             }
             
         }
         None => {
             ApiResponse {
-                json: json!(""),
-                status: Status::Forbidden
+                json: json!(get_err_resp("", "账号或密码错误".to_string())),
+                status: Status::Ok
             }
         }
     }

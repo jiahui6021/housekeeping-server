@@ -30,11 +30,19 @@ pub fn prepare(token_user: TokenUser, chosenAddressId: Option<i32>, idCarts : St
     }
 }
 
-#[post("/order/save?<idAddress>&<message>&<idCarts>")]
-pub fn save_order(token_user: TokenUser, idAddress: i32, message: String, idCarts: String, conn: DbConn) -> ApiResponse {
+#[post("/order/save?<idAddress>&<message>&<date>&<time>&<idCarts>")]
+pub fn save_order(
+    token_user: TokenUser,
+    idAddress: i32, 
+    message: String,
+    date: String,
+    time: String, 
+    idCarts: String, 
+    conn: DbConn
+) -> ApiResponse {
     if crate::admin::account::check_user_admin(token_user.id, &conn) {
         let id_carts = crate::util::split_string_to_i32_vec(idCarts);
-        let order_resp = logic::create_new_order(id_carts, idAddress, token_user.id, &conn);
+        let order_resp = logic::create_new_order(id_carts, idAddress, date, time,token_user.id, &conn);
         ApiResponse {
             json: json!(get_ok_resp(order_resp)),
             status: Status::Ok
@@ -136,6 +144,15 @@ pub fn send_out(token_user: TokenUser, id: i32, idExpress: Option<String>, shipp
 #[post("/order/confirm/<id>")]
 pub fn confirm(token_user: TokenUser, id: i32, conn: DbConn) -> ApiResponse {
     logic::update_order_status(id, 4, &conn);
+    ApiResponse {
+        json: json!(get_ok_resp("成功")),
+        status: Status::Ok
+    }
+}
+
+#[post("/order/cancel/<id>")]
+pub fn cancel(token_user: TokenUser, id: i32, conn: DbConn) -> ApiResponse {
+    logic::update_order_status(id, 5, &conn);
     ApiResponse {
         json: json!(get_ok_resp("成功")),
         status: Status::Ok
