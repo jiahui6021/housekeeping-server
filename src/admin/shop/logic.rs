@@ -300,3 +300,9 @@ pub fn del_like(user_id: i32, mut goods_id: String, conn: &DbConn) {
         .expect("Error delete like");
     }
 }
+
+pub fn get_like_num(conn: &DbConn) -> i32 {
+    use crate::schema::like::dsl::*;
+    use diesel::dsl;
+    like.select(dsl::count_star()).first::<i64>(&**conn).unwrap() as i32
+}

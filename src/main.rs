@@ -56,7 +56,8 @@ fn rocket() -> Rocket {
                             shop::router::get_banner, 
                             shop::router::get_new, 
                             shop::router::get_goods_key, 
-                            account::router::logout_user])
+                            account::router::logout_user,
+                            account::router::dashboard])
     .mount("/account", routes![account::router::login_admin
                                     ,account::router::info_admin,
                                     account::router::logout])

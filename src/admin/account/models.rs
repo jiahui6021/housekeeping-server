@@ -227,3 +227,11 @@ pub struct AddrList {
     pub size: i32,
     pub total: i32,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct Dashboard {
+    pub orderCount: i32,
+    pub orderSumPrice: i32,
+    pub userCount: i32,
+    pub likeCount: i32,
+}

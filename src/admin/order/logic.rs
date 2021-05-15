@@ -104,3 +104,23 @@ pub fn update_order_status(orderSn: i32, status: i32, conn: &DbConn) {
     .execute(&**conn)
     .expect("Error update goods");
 }
+
+pub fn get_order_num(conn: &DbConn) -> i32 {
+    use crate::schema::order::dsl::*;
+    use diesel::dsl;
+    order.select(dsl::count_star()).first::<i64>(&**conn).unwrap() as i32
+}
+
+pub fn get_order_sum_price(conn: &DbConn) -> i32 {
+    let orders = dsl::order
+    .load::<models::Order>(&**conn)
+    .unwrap();
+    let mut resp = 0;
+    for order in orders {
+        let order_resp = models::OrderResp::from_order(order, conn);
+        resp = resp + order_resp.totalPrice;
+    }
+    resp
+}
+
+
