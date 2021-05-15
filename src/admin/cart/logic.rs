@@ -14,7 +14,7 @@ pub fn get_cart_by_user(user_id: i32, conn: &DbConn) -> Vec<models::Cart> {
         .filter(dsl::user_id.eq(user_id))
         .load::<models::Cart>(&**conn)
         .expect("get cart error");
-    resp.retain(|cart|cart.order_id.is_some());
+    resp.retain(|cart|cart.order_id.is_none());
     resp
 }
 
