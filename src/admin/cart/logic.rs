@@ -10,10 +10,12 @@ pub fn create_cart(cart: models::NewCart, conn: &DbConn) {
 }
 
 pub fn get_cart_by_user(user_id: i32, conn: &DbConn) -> Vec<models::Cart> {
-    dsl::cart
+    let mut resp = dsl::cart
         .filter(dsl::user_id.eq(user_id))
         .load::<models::Cart>(&**conn)
-        .expect("get cart error")
+        .expect("get cart error");
+    resp.retain(|cart|cart.order_id.is_some());
+    resp
 }
 
 pub fn get_cart_by_id(id: i32, conn: &DbConn) -> models::Cart {
