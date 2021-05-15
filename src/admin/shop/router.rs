@@ -354,6 +354,26 @@ pub fn get_favorite(token_user: TokenUser, conn: DbConn) -> ApiResponse {
     }
 }
 
+#[get("/favorite/list?<page>&<limit>")]
+pub fn get_favorite_admin(token_user: TokenUser, page: i32, limit: i32, conn: DbConn) -> ApiResponse {
+    let (likes, sum) = logic::get_like_admin_by_page(page, limit, &conn).unwrap_or_default();
+    let like_goods = logic::get_like_admin_by_like(likes, &conn);
+    let resp = models::LikeAdminList {
+        records: like_goods,
+        current: page,
+        limit,
+        offset: limit,
+        pages: page,
+        searchCount: true,
+        size: limit,
+        total: sum,
+    };
+    ApiResponse {
+        json: json!(get_ok_resp(resp)),
+        status: Status::Ok
+    }
+}
+
 #[post("/favorite/dislikeBatch", data = "<ids>")]
 pub fn del_like(token_user: TokenUser, mut ids: String, conn: DbConn) -> ApiResponse {
     logic::del_like(token_user.id, ids, &conn);

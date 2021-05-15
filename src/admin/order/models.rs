@@ -21,6 +21,7 @@ pub struct Order {
     pub status: i32,
     pub date: String,
     pub time: String,
+    pub msg: String,
 }
 
 #[derive(Insertable, Serialize, Deserialize, Default, Clone)]
@@ -32,7 +33,8 @@ pub struct NewOrder {
     pub payStatus: i32,
     pub status: i32,
     pub date: String,
-    pub time: String
+    pub time: String,
+    pub msg: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -115,7 +117,7 @@ impl OrderResp {
             idAddress: order.idAddress,
             idUser: order.idUser,
             items: carts_resp,
-            message: "".to_string(),
+            message: order.msg.clone(),
             mobile: user.mobile.clone(),
             modifyTime: "".to_string(),
             orderSn: order.id.to_string(),

@@ -76,7 +76,9 @@ fn rocket() -> Rocket {
                                   shop::router::set_banner,
                                   shop::router::get_id_banner,
                                   shop::router::remove_banner,
-                                  order::router::send_out])
+                                  order::router::send_out,
+                                  order::router::order_msg,
+                                  shop::router::get_favorite_admin])
     .mount("/file", StaticFiles::from("static"))
     .mount("/user", routes![account::router::get_user_info,
                                     cart::router::add_cart,

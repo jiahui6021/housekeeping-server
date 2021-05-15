@@ -350,13 +350,15 @@ pub fn update_user_pass(token_user: TokenUser, old: String, new: String, newa: S
 pub fn dashboard(token_user: TokenUser, conn: DbConn) -> ApiResponse {
     let orderCount = crate::admin::order::logic::get_order_num(&conn);
     let userCount = crate::admin::account::logic::get_shop_user_num(&conn);
-    let orderSumPrice = crate::admin::order::logic::get_order_sum_price(&conn);
+    let orderSumPrice = crate::admin::order::logic::get_order_sum_price(&conn)/100;
     let likeCount = crate::admin::shop::logic::get_like_num(&conn);
+    let email = vec![34,43,89,99,98,97,95];
     let resp = Dashboard {
         orderCount,
         userCount,
         orderSumPrice,
-        likeCount
+        likeCount,
+        email
     };
     ApiResponse{
         json: json!(get_ok_resp(resp)),

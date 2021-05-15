@@ -58,7 +58,7 @@ pub fn save_order(
 #[get("/order/getOrders?<page>&<limit>&<status>")]
 pub fn get_order(token_user: TokenUser, page: i32, limit: i32, status: Option<i32>, conn: DbConn) -> ApiResponse {
     if crate::admin::account::check_user_admin(token_user.id, &conn) {
-        let (order, num) = logic::get_order_by_range(page, limit, status, &conn).unwrap();
+        let (order, num) = logic::get_order_by_range_i32(page, limit, status, &conn).unwrap();
         let resp = models::OrderList {
             records: order,
             current: page,
@@ -81,10 +81,18 @@ pub fn get_order(token_user: TokenUser, page: i32, limit: i32, status: Option<i3
     }
 }
 
-#[get("/order/list?<page>&<limit>&<status>")]
-pub fn get_order_admin(token_user: TokenUser, page: i32, limit: i32, status: Option<i32>, conn: DbConn) -> ApiResponse {
+#[get("/order/list?<page>&<limit>&<mobile>&<orderSn>&<status>")]
+pub fn get_order_admin(
+    token_user: TokenUser, 
+    page: i32, 
+    limit: i32, 
+    mobile: Option<String>, 
+    orderSn:Option<i32>, 
+    status: Option<String>, 
+    conn: DbConn
+) -> ApiResponse {
     if crate::admin::account::check_user_admin(token_user.id, &conn) {
-        let (order, num) = logic::get_order_by_range(page, limit, status, &conn).unwrap();
+        let (order, num) = logic::get_order_by_range(page, limit, status, mobile, orderSn, &conn).unwrap();
         let resp = models::OrderList {
             records: order,
             current: page,
@@ -153,6 +161,15 @@ pub fn confirm(token_user: TokenUser, id: i32, conn: DbConn) -> ApiResponse {
 #[post("/order/cancel/<id>")]
 pub fn cancel(token_user: TokenUser, id: i32, conn: DbConn) -> ApiResponse {
     logic::update_order_status(id, 5, &conn);
+    ApiResponse {
+        json: json!(get_ok_resp("成功")),
+        status: Status::Ok
+    }
+}
+
+#[post("/order/comment/<id>?<message>")]
+pub fn order_msg(token_user: TokenUser, id: i32, message: String, conn: DbConn) -> ApiResponse {
+    logic::update_order_msg(id, message, &conn);
     ApiResponse {
         json: json!(get_ok_resp("成功")),
         status: Status::Ok

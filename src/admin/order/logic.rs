@@ -31,6 +31,7 @@ pub fn create_new_order(id_carts: Vec<i32>, id_addr: i32, date: String, time: St
         status: 1,
         date,
         time,
+        msg: "".to_string(),
     };
     let id = create_order(new_order, conn);
     for id_cart in id_carts {
@@ -39,7 +40,38 @@ pub fn create_new_order(id_carts: Vec<i32>, id_addr: i32, date: String, time: St
     get_order_resp_by_id(id, conn)
 }
 
-pub fn get_order_by_range(page: i32, limit: i32, status: Option<i32>, conn: &DbConn) -> Option<(Vec<models::OrderResp>, i32)> {
+pub fn get_order_by_range(page: i32, limit: i32, status: Option<String>, mobile: Option<String>, orderSn:Option<i32>, conn: &DbConn) -> Option<(Vec<models::OrderResp>, i32)> {
+    let mut query = order::table.into_boxed();
+    if let Some(status) = status {
+        let status = match &status[..] {
+            "unPay" => 1,
+            "unSend" => 2,
+            "sended" => 3,
+            "finished" => 4,
+            "cancel" => 5,
+            "refundIng" => 6,
+            "refund" => 7,
+            _ => 0
+        };
+        query = query.filter(order::status.eq(status));
+    };
+    if let Some(mobile) = mobile {
+        if mobile.len() > 0 {
+            let id_user = crate::admin::account::logic::get_shop_user(&mobile, conn).unwrap().id;
+            query = query.filter(order::idUser.eq(id_user));
+        }
+    }
+    if let Some(order_id) = orderSn {
+        query = query.filter(order::id.eq(order_id));
+    }
+    
+    let all_goods = query
+                    .load::<models::Order>(&**conn)
+                    .ok();
+    get_limit_order_resp(all_goods, page, limit, conn)
+}
+
+pub fn get_order_by_range_i32(page: i32, limit: i32, status: Option<i32>, conn: &DbConn) -> Option<(Vec<models::OrderResp>, i32)> {
     let all_goods = match status {
         Some(status) => {
             dsl::order
@@ -103,6 +135,13 @@ pub fn update_order_status(orderSn: i32, status: i32, conn: &DbConn) {
     .set(dsl::status.eq(status))
     .execute(&**conn)
     .expect("Error update goods");
+}
+
+pub fn update_order_msg(orderSn: i32, msg: String, conn: &DbConn) {
+    diesel::update(dsl::order.filter(dsl::id.eq(orderSn)))
+    .set(dsl::msg.eq(msg))
+    .execute(&**conn)
+    .expect("Error update order msg");
 }
 
 pub fn get_order_num(conn: &DbConn) -> i32 {

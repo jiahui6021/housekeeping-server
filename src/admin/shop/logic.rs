@@ -137,6 +137,23 @@ pub fn get_like_goods_by_like(likes: Vec<models::Like>, conn: &DbConn) -> Vec<mo
     }).collect()
 }
 
+pub fn get_like_admin_by_like(likes: Vec<models::Like>, conn: &DbConn) -> Vec<models::LikeAdmin> {
+    likes.iter().map(|like|{
+        let good = goods::dsl::goods
+        .filter(goods::dsl::id.eq(like.id))
+        .first::<models::Goods>(&**conn)
+        .unwrap();
+        let user = crate::admin::account::logic::get_shop_user_by_id(like.user_id, conn).unwrap_or_default();
+        models::LikeAdmin{
+            id: like.id,
+            idGoods: like.goods_id,
+            goods: models::GoodsResp::from_goods(good, conn),
+            idUser: like.user_id,
+            user,
+        }
+    }).collect()
+}
+
 pub fn get_category_goods_resp_by_page(page: i32, limit: i32, category: i32, conn: &DbConn) -> Option<(Vec<models::GoodsResp>, i32)> {
     let all_goods = goods::dsl::goods
     .filter(goods::dsl::idCategory.eq(category))
@@ -306,3 +323,30 @@ pub fn get_like_num(conn: &DbConn) -> i32 {
     use diesel::dsl;
     like.select(dsl::count_star()).first::<i64>(&**conn).unwrap() as i32
 }
+
+fn get_limit_like_admin_resp(all_goods: Option<Vec<models::Like>>, page: i32, limit: i32, conn: &DbConn) -> Option<(Vec<models::Like>, i32)> {
+    let start = (page - 1) * limit;
+    let end = start + limit -1;
+    let mut resp = Vec::new();
+    match all_goods {
+        Some(all_goods) => {
+            for index in start..end {
+                if let Some(good) = all_goods.get(index as usize){
+                    resp.push(good.clone());
+                }
+            }
+            Some((resp, all_goods.len() as i32))
+        }
+        None => {
+            None
+        }
+    }
+}
+
+pub fn get_like_admin_by_page(page: i32, limit: i32, conn: &DbConn) -> Option<(Vec<models::Like>, i32)> {
+    let all_goods = like::dsl::like
+    .load::<models::Like>(&**conn)
+    .ok();
+    get_limit_like_admin_resp(all_goods, page, limit, conn)
+}
+

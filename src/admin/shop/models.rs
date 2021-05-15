@@ -275,3 +275,24 @@ pub struct LikeGoods {
     pub idGoods: i32,
     pub goods: GoodsResp
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct LikeAdmin {
+    pub id: i32,
+    pub idGoods: i32,
+    pub goods: GoodsResp,
+    pub idUser: i32,
+    pub user: crate::admin::account::models::ShopUser
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct LikeAdminList {
+    pub records: Vec<LikeAdmin>,
+    pub current: i32,
+    pub limit: i32,
+    pub offset: i32,
+    pub pages: i32,
+    pub searchCount: bool,
+    pub size: i32,
+    pub total: i32,
+}

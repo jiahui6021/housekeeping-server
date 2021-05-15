@@ -105,6 +105,7 @@ table! {
         status -> Integer,
         date -> Varchar,
         time -> Varchar,
+        msg -> Varchar,
     }
 }
 

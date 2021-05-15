@@ -234,4 +234,5 @@ pub struct Dashboard {
     pub orderSumPrice: i32,
     pub userCount: i32,
     pub likeCount: i32,
+    pub email: Vec<i32>
 }
