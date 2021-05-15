@@ -71,20 +71,11 @@ pub fn get_order_by_range(page: i32, limit: i32, status: Option<String>, mobile:
     get_limit_order_resp(all_goods, page, limit, conn)
 }
 
-pub fn get_order_by_range_i32(page: i32, limit: i32, status: Option<i32>, conn: &DbConn) -> Option<(Vec<models::OrderResp>, i32)> {
-    let all_goods = match status {
-        Some(status) => {
-            dsl::order
-                .filter(dsl::status.eq(status))
-                .load::<models::Order>(&**conn)
-                .ok()
-        }
-        None => {
-            dsl::order
-                .load::<models::Order>(&**conn)
-                .ok()
-        }
-    };
+pub fn get_order_by_range_i32(user_id: i32, page: i32, limit: i32, conn: &DbConn) -> Option<(Vec<models::OrderResp>, i32)> {
+    let all_goods = dsl::order
+    .filter(dsl::idUser.eq(user_id))
+    .load::<models::Order>(&**conn)
+    .ok();
     get_limit_order_resp(all_goods, page, limit, conn)
 }
 
@@ -115,12 +106,14 @@ fn get_limit_order_resp(all_goods: Option<Vec<models::Order>>, page: i32, limit:
                     resp.push(models::OrderResp::from_order(good.clone(),conn));
                 }
             }
+            resp.reverse();
             Some((resp, all_goods.len() as i32))
         }
         None => {
             None
         }
     }
+    
 }
 
 pub fn update_order_pay(orderSn: i32, conn: &DbConn) {
