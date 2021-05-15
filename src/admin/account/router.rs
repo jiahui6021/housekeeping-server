@@ -360,7 +360,7 @@ pub fn dashboard(token_user: TokenUser, conn: DbConn) -> ApiResponse {
     };
     ApiResponse{
         json: json!(get_ok_resp(resp)),
-        status: Status::Forbidden,
+        status: Status::Ok,
     }
 }
 
