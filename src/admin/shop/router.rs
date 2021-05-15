@@ -382,3 +382,21 @@ pub fn del_like(token_user: TokenUser, mut ids: String, conn: DbConn) -> ApiResp
         status: Status::Ok
     }
 }
+
+#[get("/favorite/ifLike/<id>")]
+pub fn if_like(token_user: TokenUser, id: i32, conn: DbConn) -> ApiResponse {
+    let resp =logic::if_like(token_user.id, id, &conn);
+    ApiResponse {
+        json: json!(get_ok_resp(resp)),
+        status: Status::Ok
+    }
+}
+
+#[post("/favorite/dislike/<goods_id>")]
+pub fn del_favorite(token_user: TokenUser, goods_id: i32, conn: DbConn) -> ApiResponse {
+    logic::del_id_like(token_user.id, goods_id, &conn);
+    ApiResponse {
+        json: json!(get_ok_resp("")),
+        status: Status::Ok
+    }
+}

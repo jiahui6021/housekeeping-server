@@ -350,3 +350,18 @@ pub fn get_like_admin_by_page(page: i32, limit: i32, conn: &DbConn) -> Option<(V
     get_limit_like_admin_resp(all_goods, page, limit, conn)
 }
 
+pub fn if_like(user_id: i32, goods_id:i32, conn: &DbConn) -> bool {
+    like::dsl::like
+    .filter(like::dsl::user_id.eq(user_id))
+    .filter(like::dsl::goods_id.eq(goods_id))
+    .load::<models::Like>(&**conn)
+    .is_ok()
+}
+
+pub fn del_id_like(user_id: i32, goods_id: i32, conn: &DbConn) {
+    diesel::delete(like::table)
+    .filter(like::dsl::user_id.eq(user_id))
+    .filter(like::dsl::goods_id.eq(goods_id))
+    .execute(&**conn)
+    .expect("Error delete like");
+}

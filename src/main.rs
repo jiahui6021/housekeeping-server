@@ -100,7 +100,9 @@ fn rocket() -> Rocket {
                                     account::router::update_user_name,
                                     account::router::update_user_sex,
                                     account::router::update_user_pass,
-                                    topic::router::change_topic_able])
+                                    topic::router::change_topic_able,
+                                    shop::router::if_like,
+                                    shop::router::del_favorite])
     .mount("/promotion", routes![topic::router::post_topic, topic::router::get_topic, topic::router::del_id_topic,])
 }
 
