@@ -55,10 +55,10 @@ pub fn save_order(
     }
 }
 
-#[get("/order/getOrders?<page>&<limit>")]
-pub fn get_order(token_user: TokenUser, page: i32, limit: i32, conn: DbConn) -> ApiResponse {
+#[get("/order/getOrders?<page>&<limit>&<status>")]
+pub fn get_order(token_user: TokenUser, page: i32, limit: i32, status: Option<i32>, conn: DbConn) -> ApiResponse {
     if crate::admin::account::check_user_admin(token_user.id, &conn) {
-        let (order, num) = logic::get_order_by_range_i32(token_user.id, page, limit, &conn).unwrap_or_default();
+        let (order, num) = logic::get_order_by_range_i32(token_user.id, status, page, limit, &conn).unwrap_or_default();
         let resp = models::OrderList {
             records: order,
             current: page,

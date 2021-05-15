@@ -71,9 +71,15 @@ pub fn get_order_by_range(page: i32, limit: i32, status: Option<String>, mobile:
     get_limit_order_resp(all_goods, page, limit, conn)
 }
 
-pub fn get_order_by_range_i32(user_id: i32, page: i32, limit: i32, conn: &DbConn) -> Option<(Vec<models::OrderResp>, i32)> {
-    let all_goods = dsl::order
-    .filter(dsl::idUser.eq(user_id))
+pub fn get_order_by_range_i32(user_id: i32, status: Option<i32>, page: i32, limit: i32, conn: &DbConn) -> Option<(Vec<models::OrderResp>, i32)> {
+    let mut query = order::table.into_boxed();
+    if let Some(status) = status {
+        if status != 0 {
+            query = query.filter(dsl::status.eq(status));
+        }
+    }
+    query = query.filter(dsl::idUser.eq(user_id));
+    let all_goods = query
     .load::<models::Order>(&**conn)
     .ok();
     get_limit_order_resp(all_goods, page, limit, conn)
