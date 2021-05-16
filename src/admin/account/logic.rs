@@ -152,6 +152,13 @@ pub fn update_user_pass(user_id: i32, pass: String, conn: &DbConn) {
     .expect("Error update user pass");
 }
 
+pub fn update_admin_user_pass(user_id: i32, pass: String, conn: &DbConn) {
+    diesel::update(shop_user::dsl::shop_user.filter(shop_user::dsl::id.eq(user_id)))
+    .set(shop_user::dsl::password.eq(pass))
+    .execute(&**conn)
+    .expect("Error update user pass");
+}
+
 pub fn get_shop_user_num(conn: &DbConn) -> i32 {
     use crate::schema::shop_user::dsl::*;
     use diesel::dsl;

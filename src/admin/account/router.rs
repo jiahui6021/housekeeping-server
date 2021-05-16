@@ -366,3 +366,19 @@ pub fn dashboard(token_user: TokenUser, conn: DbConn) -> ApiResponse {
     }
 }
 
+#[post("/updatePwd?<oldPassword>&<password>&<rePassword>")]
+pub fn update_admin_pass(token_user: TokenUser, oldPassword: String, password: String, rePassword: String, conn: DbConn) -> ApiResponse {
+    let shop_user = User::from_id(token_user.id, &conn).unwrap();
+    if shop_user.password.eq(&oldPassword) {
+        logic::update_admin_user_pass(token_user.id, password, &conn);
+        //let resp = logic::get_shop_user_by_id(token_user.id, &conn).unwrap();
+        return ApiResponse{
+            json: json!(get_ok_resp("resp")),
+            status: Status::Ok,
+        };
+    }
+    ApiResponse{
+        json: json!(get_ok_resp("密码错误")),
+        status: Status::Forbidden,
+    }
+}

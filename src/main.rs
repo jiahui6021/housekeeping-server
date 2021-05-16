@@ -60,7 +60,8 @@ fn rocket() -> Rocket {
                             account::router::dashboard])
     .mount("/account", routes![account::router::login_admin
                                     ,account::router::info_admin,
-                                    account::router::logout])
+                                    account::router::logout,
+                                    account::router::update_admin_pass])
     .mount("/menu", routes![menu::router::list_admin])
     .mount("/shop", routes![shop::router::add_category,
                                   shop::router::get_category,

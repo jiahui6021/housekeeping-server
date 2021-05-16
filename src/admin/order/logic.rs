@@ -53,7 +53,9 @@ pub fn get_order_by_range(page: i32, limit: i32, status: Option<String>, mobile:
             "refund" => 7,
             _ => 0
         };
-        query = query.filter(order::status.eq(status));
+        if status != 0 {
+            query = query.filter(order::status.eq(status));
+        }
     };
     if let Some(mobile) = mobile {
         if mobile.len() > 0 {
