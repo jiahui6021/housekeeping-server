@@ -138,6 +138,15 @@ pub fn update_order_status(orderSn: i32, status: i32, conn: &DbConn) {
     .expect("Error update goods");
 }
 
+pub fn update_order_staff(orderSn: i32, staff: Option<i32>, conn: &DbConn) {
+    if let Some(staff) = staff {
+        diesel::update(dsl::order.filter(dsl::id.eq(orderSn)))
+        .set(dsl::payId.eq(staff))
+        .execute(&**conn)
+        .expect("Error update goods");
+    }
+}
+
 pub fn update_order_msg(orderSn: i32, msg: String, conn: &DbConn) {
     diesel::update(dsl::order.filter(dsl::id.eq(orderSn)))
     .set(dsl::msg.eq(msg))

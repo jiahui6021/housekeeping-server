@@ -142,6 +142,18 @@ table! {
 }
 
 table! {
+    staff (id) {
+        id -> Integer,
+        account -> Varchar,
+        name -> Varchar,
+        sex -> Integer,
+        status -> Integer,
+        phone -> Varchar,
+        deptName -> Varchar,
+    }
+}
+
+table! {
     topic (id) {
         id -> Integer,
         id_article -> Integer,
@@ -194,6 +206,7 @@ allow_tables_to_appear_in_same_query!(
     post,
     service,
     shop_user,
+    staff,
     topic,
     user,
     users,

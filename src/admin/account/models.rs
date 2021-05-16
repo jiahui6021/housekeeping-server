@@ -1,4 +1,4 @@
-use crate::{database::conn::DbConn, schema::{user::{self, dsl}, shop_user, addr}, jwt::JWT};
+use crate::{database::conn::DbConn, schema::{user::{self, dsl}, shop_user, addr, staff}, jwt::JWT};
 use serde::{Deserialize, Serialize};
 use diesel::prelude::*;
 use rocket::{Request, request::{self, FromRequest}, Outcome, http::Status};
@@ -235,4 +235,83 @@ pub struct Dashboard {
     pub userCount: i32,
     pub likeCount: i32,
     pub email: Vec<i32>
+}
+
+#[derive(Queryable, Serialize, Deserialize, Default, Clone)]
+pub struct Staff {
+    pub id: i32,
+    pub account: String,
+    pub name: String,
+    pub sex: i32,
+    pub status: i32,
+    pub phone: String,
+    pub deptName: String,
+}
+
+#[derive(Insertable, AsChangeset, Serialize, Deserialize, Default, Clone)]
+#[table_name = "staff"]
+pub struct NewStaff {
+    pub account: String,
+    pub name: String,
+    pub sex: i32,
+    pub status: i32,
+    pub phone: String,
+    pub deptName: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct StaffResp {
+    pub id: i32,
+    pub account: String,
+    pub name: String,
+    pub sex: i32,
+    pub sexName: String,
+    pub status: i32,
+    pub statusName: String,
+    pub phone: String,
+    pub deptName: String,
+}
+
+impl StaffResp {
+    pub fn from_staff(staff: Staff) -> Self {
+        let sexName = match staff.sex {
+            1 => {
+                "男".to_string()
+            },
+            _ => {
+                "女".to_string()
+            }
+        };
+        let statusName = match staff.status {
+            1 => {
+                "正常".to_string()
+            },
+            _ => {
+                "冻结".to_string()
+            }
+        };
+        Self {
+            id: staff.id,
+            account: staff.account,
+            name: staff.name,
+            sex: staff.sex,
+            sexName,
+            status: staff.status,
+            statusName,
+            phone: staff.phone,
+            deptName: staff.deptName,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct StaffList {
+    pub records: Vec<StaffResp>,
+    pub current: i32,
+    pub limit: i32,
+    pub offset: i32,
+    pub pages: i32,
+    pub searchCount: bool,
+    pub size: i32,
+    pub total: i32,
 }

@@ -62,7 +62,7 @@ pub struct OrderResp {
     pub mobile: String,
     pub modifyTime: String,
     pub orderSn: String,
-    pub payId: Option<i32>,
+    pub payId: String,
     pub payStatus: i32,
     pub payStatusName: String,
     pub realPrice: i32,
@@ -72,6 +72,7 @@ pub struct OrderResp {
     pub user: crate::admin::account::models::ShopUser,
     pub date: String,
     pub time: String,
+    pub staff_phone: String,
 }
 
 impl OrderResp {
@@ -105,6 +106,16 @@ impl OrderResp {
             }
         };
 
+        // payId is service staff
+        let mut payId = String::new();
+        let mut staff_phone = String::new();
+        if let Some(staff_if) = order.payId {
+            let staff = crate::admin::account::logic::get_staff_by_id(staff_if, conn).unwrap_or_default();
+            let name = staff.name;
+            let phone = staff.phone;
+            payId.push_str(&name);
+            staff_phone.push_str(&phone);
+        }
         let mut all_addr = addr.province;
         all_addr.push_str(&addr.city);
         all_addr.push_str(&addr.district);
@@ -121,7 +132,7 @@ impl OrderResp {
             mobile: user.mobile.clone(),
             modifyTime: "".to_string(),
             orderSn: order.id.to_string(),
-            payId: order.payId,
+            payId,
             payStatus: order.payStatus,
             payStatusName: "".to_string(),
             realPrice: total_price,
@@ -130,7 +141,8 @@ impl OrderResp {
             totalPrice: total_price,
             user,
             date: order.date.clone(),
-            time: order.time.clone()
+            time: order.time.clone(),
+            staff_phone,
         }
     }
 }

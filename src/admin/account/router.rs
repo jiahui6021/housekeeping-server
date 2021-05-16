@@ -382,3 +382,78 @@ pub fn update_admin_pass(token_user: TokenUser, oldPassword: String, password: S
         status: Status::Forbidden,
     }
 }
+
+#[post("/user?<id>&<account>&<name>&<sex>&<dept>&<status>&<phone>&<deptName>")]
+pub fn add_staff(
+    id: Option<i32>, 
+    account: String, 
+    name: String, 
+    sex: i32,
+    dept: Option<String>,
+    status: i32,
+    phone: String,
+    deptName: String,
+    conn: DbConn
+) -> ApiResponse {
+    let new_staff = super::models::NewStaff {
+        account,
+        name,
+        sex,
+        status,
+        phone,
+        deptName,
+    };
+    if let Some(id) = id {
+        logic::update_staff(id, new_staff, &conn);
+    } else {
+        logic::create_staff(&new_staff, &conn);
+    }
+    ApiResponse{
+        json: json!(get_ok_resp("密码错误")),
+        status: Status::Ok,
+    }
+}
+
+#[get("/user/list?<page>&<limit>&<account>&<name>&<sex>")]
+pub fn get_staff_list(token_user: TokenUser, page: i32, limit: i32, account: Option<String>, name: Option<String>, sex: Option<i32>, conn: DbConn) -> ApiResponse {
+    if crate::admin::account::check_user_admin(token_user.id, &conn) {
+        let (shop_user, num) = logic::get_staff_by_page(page, limit, account, name, sex, &conn).unwrap();
+        let resp = StaffList {
+            records: shop_user,
+            current: page,
+            limit,
+            offset: limit,
+            pages: page,
+            searchCount: true,
+            size: limit,
+            total: num,
+        };
+        ApiResponse {
+            json: json!(get_ok_resp(resp)),
+            status: Status::Ok
+        }
+    } else {
+        ApiResponse {
+            json: json!(""),
+            status: Status::Forbidden
+        }
+    }
+}
+
+#[delete("/user?<userId>")]
+pub fn del_staff(userId: i32, conn: DbConn) -> ApiResponse {
+    logic::del_staff(userId, &conn);
+    ApiResponse{
+        json: json!(get_ok_resp("")),
+        status: Status::Ok,
+    }
+}
+
+#[get("/sys/staff/get?<page>&<limit>&<title>")]
+pub fn get_title_staff(page: i32, limit: i32, title: String, conn: DbConn) -> ApiResponse {
+    let resp = logic::get_staff_by_title(title, &conn);
+    ApiResponse{
+        json: json!(get_ok_resp(resp)),
+        status: Status::Ok,
+    }
+}

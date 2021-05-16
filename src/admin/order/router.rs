@@ -141,8 +141,9 @@ pub fn pay_order(token_user: TokenUser, orderSn: i32, conn: DbConn) -> ApiRespon
 }
 
 #[post("/order/sendOut/<id>?<idExpress>&<shippingSn>")]
-pub fn send_out(token_user: TokenUser, id: i32, idExpress: Option<String>, shippingSn: Option<String>, conn: DbConn) -> ApiResponse {
+pub fn send_out(token_user: TokenUser, id: i32, idExpress: Option<i32>, shippingSn: Option<String>, conn: DbConn) -> ApiResponse {
     logic::update_order_status(id, 3, &conn);
+    logic::update_order_staff(id, idExpress, &conn);
     ApiResponse {
         json: json!(get_ok_resp("成功")),
         status: Status::Ok

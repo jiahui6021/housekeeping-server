@@ -1,4 +1,4 @@
-use crate::{database::conn::DbConn, schema::{shop_user::{self, dsl}, addr}, jwt::JWT};
+use crate::{database::conn::DbConn, schema::{shop_user::{self, dsl}, addr, staff}, jwt::JWT};
 use super::models;
 use diesel::prelude::*;
 
@@ -33,6 +33,27 @@ pub fn create_addr(addr: &models::NewAddr, conn: &DbConn) {
             .expect("Error saving new addr");
 }
 
+pub fn create_staff(staff: &models::NewStaff, conn: &DbConn) {
+    diesel::insert_into(staff::table)
+            .values(staff)
+            .execute(&**conn)
+            .expect("Error saving new staff");
+}
+
+pub fn get_staff_by_title(title: String, conn: &DbConn) -> Option<Vec<models::Staff>> {
+    staff::dsl::staff
+        .filter(staff::dsl::deptName.eq(title))
+        .load::<models::Staff>(&**conn)
+        .ok()
+}
+
+pub fn get_staff_by_id(id: i32, conn: &DbConn) -> Option<models::Staff> {
+    staff::dsl::staff
+        .filter(staff::dsl::id.eq(id))
+        .first::<models::Staff>(&**conn)
+        .ok()
+}
+
 pub fn get_addr_by_user(user_id: i32, conn: &DbConn) -> Option<Vec<models::Addr>> {
     addr::dsl::addr
         .filter(addr::dsl::idUser.eq(user_id))
@@ -52,6 +73,13 @@ pub fn modify_addr(id: Option<i32>, addr: models::NewAddr, conn: &DbConn) {
     .set(addr)
     .execute(&**conn)
     .expect("Error update goods");
+}
+
+pub fn update_staff(id: i32, staff: models::NewStaff, conn: &DbConn) {
+    diesel::update(staff::dsl::staff.filter(staff::dsl::id.eq(id)))
+    .set(staff)
+    .execute(&**conn)
+    .expect("Error update staff");
 }
 
 pub fn get_shop_user_by_page(page: i32, mobile: Option<String>, limit: i32, conn: &DbConn) -> Option<(Vec<models::ShopUser>, i32)> {
@@ -163,4 +191,52 @@ pub fn get_shop_user_num(conn: &DbConn) -> i32 {
     use crate::schema::shop_user::dsl::*;
     use diesel::dsl;
     shop_user.select(dsl::count_star()).first::<i64>(&**conn).unwrap() as i32
+}
+
+pub fn get_staff_by_page(page: i32, limit: i32, account: Option<String>, name: Option<String>, sex: Option<i32>, conn: &DbConn) -> Option<(Vec<models::StaffResp>, i32)> {
+    let mut query = staff::table.into_boxed();
+    if let Some(account) = account {
+        if account.len() > 0 {
+            query = query.filter(staff::account.eq(account));
+        }
+    };
+    if let Some(name) = name {
+        if name.len() > 0 {
+            query = query.filter(staff::name.eq(name));
+        }
+    }
+    if let Some(sex) = sex {
+        query = query.filter(staff::sex.eq(sex));
+    }
+    
+    let all_goods = query
+                    .load::<models::Staff>(&**conn)
+                    .ok();
+    get_limit_staff_resp(all_goods, page, limit, conn)
+}
+
+fn get_limit_staff_resp(all_goods: Option<Vec<models::Staff>>, page: i32, limit: i32, conn: &DbConn) -> Option<(Vec<models::StaffResp>, i32)> {
+    let start = (page - 1) * limit;
+    let end = start + limit -1;
+    let mut resp = Vec::new();
+    match all_goods {
+        Some(all_goods) => {
+            for index in start..end {
+                if let Some(good) = all_goods.get(index as usize){
+                    resp.push(models::StaffResp::from_staff(good.clone()));
+                }
+            }
+            Some((resp, all_goods.len() as i32))
+        }
+        None => {
+            None
+        }
+    }
+}
+
+pub fn del_staff(id: i32, conn: &DbConn) {
+    diesel::delete(staff::table)
+    .filter(staff::dsl::id.eq(id))
+    .execute(&**conn)
+    .expect("Error delete staff");
 }
