@@ -40,7 +40,14 @@ pub fn create_new_order(id_carts: Vec<i32>, id_addr: i32, date: String, time: St
     get_order_resp_by_id(id, conn)
 }
 
-pub fn get_order_by_range(page: i32, limit: i32, status: Option<String>, mobile: Option<String>, orderSn:Option<i32>, conn: &DbConn) -> Option<(Vec<models::OrderResp>, i32)> {
+pub fn get_order_by_range(
+    page: i32, 
+    limit: i32, 
+    status: Option<String>, 
+    mobile: Option<String>, 
+    orderSn:Option<i32>, 
+    conn: &DbConn
+) -> Option<(Vec<models::OrderResp>, i32)> {
     let mut query = order::table.into_boxed();
     if let Some(status) = status {
         let status = match &status[..] {

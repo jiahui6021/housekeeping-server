@@ -5,6 +5,7 @@ use std::{collections::HashMap, str::FromStr};
 use serde::{Deserialize, Serialize};
 use rocket_contrib::json::{Json, JsonValue};
 use crate::{database::conn::DbConn, models::{ApiResponse, get_ok_resp, get_err_resp}};
+use md5;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Token {
@@ -72,9 +73,10 @@ pub fn loginOrReg(mobile: String, smsCode: String, conn: DbConn) -> ApiResponse 
             }
         }
         None => {
+            let password = crate::util::get_md5("123456".to_string());
             let new_user = NewShopUser {
                 mobile,
-                password: "123456".to_string(),
+                password,
                 nickName: "未命名用户".to_string(),
                 avatar: "".to_string(),
                 gender: "".to_string(),
@@ -139,9 +141,10 @@ pub fn get_id_user_info(id: i32, conn: DbConn) -> ApiResponse {
 
 #[post("/loginByPass?<mobile>&<password>")]
 pub fn login_by_pass(mobile: String, password: String, conn: DbConn) -> ApiResponse {
+    let md5_password = crate::util::get_md5(password.clone());
     match logic::get_shop_user(&mobile, &conn) {
         Some(shop_user) => {
-            if shop_user.password.eq(&password) {
+            if shop_user.password.eq(&password) || shop_user.password.eq(&md5_password) {
                 let resp = ShopUserResp {
                     token: shop_user.generate_token(69000, ""),
                     user: shop_user
@@ -333,6 +336,7 @@ pub fn update_user_sex(token_user: TokenUser, data: String, conn: DbConn) -> Api
 pub fn update_user_pass(token_user: TokenUser, old: String, new: String, newa: String, conn: DbConn) -> ApiResponse {
     let shop_user = logic::get_shop_user_by_id(token_user.id, &conn).unwrap();
     if shop_user.password.eq(&old) {
+        let new = crate::util::get_md5(new);
         logic::update_user_pass(token_user.id, new, &conn);
         let resp = logic::get_shop_user_by_id(token_user.id, &conn).unwrap();
         return ApiResponse{

@@ -6,3 +6,7 @@ pub fn split_string_to_i32_vec(data: String) -> Vec<i32> {
     }
     resp
 }
+
+pub fn get_md5(data: String) -> String {
+    format!("{:?}",md5::compute(data))
+}

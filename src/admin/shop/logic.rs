@@ -154,6 +154,18 @@ pub fn get_like_admin_by_like(likes: Vec<models::Like>, conn: &DbConn) -> Vec<mo
     }).collect()
 }
 
+pub fn get_num_like(num: i32, conn: &DbConn) -> Vec<models::Like> {
+    like::dsl::like
+        .load::<models::Like>(&**conn)
+        .unwrap()
+}
+
+pub fn get_num_goods(num: i32, conn: &DbConn) -> Vec<models::Goods> {
+    goods::dsl::goods
+        .load::<models::Goods>(&**conn)
+        .unwrap()
+}
+
 pub fn get_category_goods_resp_by_page(page: i32, limit: i32, category: i32, conn: &DbConn) -> Option<(Vec<models::GoodsResp>, i32)> {
     let all_goods = goods::dsl::goods
     .filter(goods::dsl::idCategory.eq(category))

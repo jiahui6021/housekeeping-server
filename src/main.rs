@@ -17,6 +17,7 @@ mod admin;
 mod models;
 mod jwt;
 mod util;
+mod like;
 //mod logic;
 
 use database::{conn::DbConn};
