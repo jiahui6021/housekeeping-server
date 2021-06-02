@@ -69,14 +69,15 @@ pub fn loginOrReg(mobile: String, smsCode: String, conn: DbConn) -> ApiResponse 
         Some(shop_user) => {
             ShopUserResp {
                 token: shop_user.generate_token(69000, ""),
-                user: shop_user
+                user: shop_user,
+                initPassword: None
             }
         }
         None => {
             let password = crate::util::get_md5("123456".to_string());
             let new_user = NewShopUser {
                 mobile,
-                password,
+                password: password.clone(),
                 nickName: "未命名用户".to_string(),
                 avatar: "".to_string(),
                 gender: "".to_string(),
@@ -84,7 +85,8 @@ pub fn loginOrReg(mobile: String, smsCode: String, conn: DbConn) -> ApiResponse 
             let new_user = logic::create_shop_user(&new_user, &conn);
             ShopUserResp {
                 token: new_user.generate_token(69000, ""),
-                user: new_user
+                user: new_user,
+                initPassword: Some(password)
             }
         }
     };
@@ -147,7 +149,8 @@ pub fn login_by_pass(mobile: String, password: String, conn: DbConn) -> ApiRespo
             if shop_user.password.eq(&password) || shop_user.password.eq(&md5_password) {
                 let resp = ShopUserResp {
                     token: shop_user.generate_token(69000, ""),
-                    user: shop_user
+                    user: shop_user,
+                    initPassword: None
                 };
                 ApiResponse {
                     json: json!(get_ok_resp(resp)),

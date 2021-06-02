@@ -62,7 +62,8 @@ fn rocket() -> Rocket {
                             account::router::add_staff,
                             account::router::get_staff_list,
                             account::router::del_staff,
-                            account::router::get_title_staff])
+                            account::router::get_title_staff,
+                            order::router::pay])
     .mount("/account", routes![account::router::login_admin
                                     ,account::router::info_admin,
                                     account::router::logout,

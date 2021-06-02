@@ -176,3 +176,12 @@ pub fn order_msg(token_user: TokenUser, id: i32, message: String, conn: DbConn) 
         status: Status::Ok
     }
 }
+
+#[post("/pay/<id>")]
+pub fn pay(token_user: TokenUser, id: i32, conn: DbConn) -> ApiResponse {
+    logic::update_order_pay(id, &conn);
+    ApiResponse {
+        json: json!(get_ok_resp("支付成功")),
+        status: Status::Ok
+    }
+}

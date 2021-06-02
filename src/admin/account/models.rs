@@ -144,6 +144,7 @@ pub struct NewShopUser {
 pub struct ShopUserResp {
     pub token: String,
     pub user: ShopUser,
+    pub initPassword: Option<String>
 }
 
 impl ShopUser {
