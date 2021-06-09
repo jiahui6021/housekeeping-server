@@ -9,20 +9,24 @@ pub fn save_article(article: models::NewArticle, conn: &DbConn){
             .expect("Error saving new article");
 }
 
-pub fn get_article_by_page(page: i32, title: Option<String>, limit: i32, conn: &DbConn) -> Option<(Vec<models::Article>, i32)> {
-    let all_goods = match title {
-        Some(title) => {
-            article::dsl::article
-            .filter(article::dsl::title.eq(title))
-            .load::<models::Article>(&**conn)
-            .ok()
-        }
-        None => {
-            article::dsl::article
-            .load::<models::Article>(&**conn)
-            .ok()
+pub fn get_article_by_page(page: i32, title: Option<String>, author: Option<String>, limit: i32, conn: &DbConn) -> Option<(Vec<models::Article>, i32)> {
+
+    let mut query = article::table.into_boxed();
+    if let Some(title) = title {
+        if title.len() > 0 {
+            query = query.filter(article::dsl::title.eq(title));
         }
     };
+    if let Some(author) = author {
+        if author.len() > 0 {
+            query = query.filter(article::dsl::author.eq(author));
+        }
+    };
+
+    let all_goods = query
+                    .load::<models::Article>(&**conn)
+                    .ok();
+
     get_limit_article_resp(all_goods, page, limit, conn)
 }
 
@@ -80,11 +84,16 @@ pub fn save_topic(topic: models::NewTopic, conn: &DbConn){
             .expect("Error saving new topic");
 }
 
-pub fn get_topic_by_page(page: i32, disabled: Option<bool>, limit: i32, conn: &DbConn) -> Option<(Vec<models::Topic>, i32)> {
+pub fn get_topic_by_page(page: i32, disabled: Option<i32>, limit: i32, conn: &DbConn) -> Option<(Vec<models::Topic>, i32)> {
     let all_goods = match disabled {
         Some(title) => {
+            let disable = if title == 0 {
+                false
+            } else {
+                true
+            };
             topic::dsl::topic
-            .filter(topic::dsl::disabled.eq(title))
+            .filter(topic::dsl::disabled.eq(disable))
             .load::<models::Topic>(&**conn)
             .ok()
         }

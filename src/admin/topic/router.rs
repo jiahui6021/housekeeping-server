@@ -38,9 +38,9 @@ pub fn post_article(article: Json<JsonArticle>, conn: DbConn) -> ApiResponse {
     }
 }
 
-#[get("/article/list?<page>&<limit>&<title>")]
-pub fn get_article(page: i32, limit: i32, title: Option<String>, conn: DbConn) -> ApiResponse {
-    match logic::get_article_by_page(page, title, limit, &conn){
+#[get("/article/list?<page>&<limit>&<title>&<author>")]
+pub fn get_article(page: i32, limit: i32, title: Option<String>, author: Option<String>, conn: DbConn) -> ApiResponse {
+    match logic::get_article_by_page(page, title, author, limit, &conn){
         Some((articles, sum)) => {
             let resp = ArticleList {
                 records: articles,
@@ -112,7 +112,7 @@ pub fn post_topic(title: String, idArticle: i32, idGoodsList: String,
 }
 
 #[get("/topic/list?<page>&<limit>&<disabled>")]
-pub fn get_topic(page: i32, limit: i32, disabled: Option<bool>, conn: DbConn) -> ApiResponse {
+pub fn get_topic(page: i32, limit: i32, disabled: Option<i32>, conn: DbConn) -> ApiResponse {
     match logic::get_topic_by_page(page, disabled, limit, &conn){
         Some((articles, sum)) => {
             let resp = TopicList {

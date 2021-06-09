@@ -86,7 +86,7 @@ pub fn loginOrReg(mobile: String, smsCode: String, conn: DbConn) -> ApiResponse 
             ShopUserResp {
                 token: new_user.generate_token(69000, ""),
                 user: new_user,
-                initPassword: Some(password)
+                initPassword: Some("123456".to_string())
             }
         }
     };

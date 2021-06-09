@@ -85,7 +85,8 @@ fn rocket() -> Rocket {
                                   shop::router::remove_banner,
                                   order::router::send_out,
                                   order::router::order_msg,
-                                  shop::router::get_favorite_admin])
+                                  shop::router::get_favorite_admin,
+                                  shop::router::set_category_is_delete])
     .mount("/file", StaticFiles::from("static"))
     .mount("/user", routes![account::router::get_user_info,
                                     cart::router::add_cart,

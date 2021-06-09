@@ -94,6 +94,22 @@ pub fn delete_category(token_user: TokenUser, id: i32, conn: DbConn) -> ApiRespo
     }
 }
 
+#[post("/category/changeShowIndex/<id>/<del>")]
+pub fn set_category_is_delete(token_user: TokenUser, id: i32, del: bool, conn: DbConn) -> ApiResponse {
+    if crate::admin::account::check_user_admin(token_user.id, &conn) {
+        logic::set_category_is_delete(id, del, &conn);
+        ApiResponse {
+            json: json!(get_ok_resp("ok")),
+            status: Status::Ok
+        }
+    } else {
+        ApiResponse {
+            json: json!("无权限"),
+            status: Status::Forbidden
+        }
+    }
+}
+
 /////////////// goods //////////////////////
 #[derive(Serialize, Deserialize, FromForm, Default)]
 pub struct GoodsForm {

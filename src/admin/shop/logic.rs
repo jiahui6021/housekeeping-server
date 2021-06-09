@@ -22,6 +22,13 @@ pub fn get_category_by_id(id: i32, conn: &DbConn) -> Option<models::Category> {
         .ok()
 }
 
+pub fn set_category_is_delete(id: i32, del: bool, conn: &DbConn) {
+    diesel::update(dsl::category.filter(dsl::id.eq(id)))
+        .set(dsl::isDelete.eq(del))
+        .execute(&**conn)
+        .ok();
+}
+
 /// return false means need create new category
 pub fn update_category_by_id(id: Option<i32>, category: models::NewCategory, conn: &DbConn) -> bool {
     match id {
@@ -363,11 +370,12 @@ pub fn get_like_admin_by_page(page: i32, limit: i32, conn: &DbConn) -> Option<(V
 }
 
 pub fn if_like(user_id: i32, goods_id:i32, conn: &DbConn) -> bool {
-    like::dsl::like
+    let likes = like::dsl::like
     .filter(like::dsl::user_id.eq(user_id))
     .filter(like::dsl::goods_id.eq(goods_id))
     .load::<models::Like>(&**conn)
-    .is_ok()
+    .unwrap_or_default();
+    likes.is_empty()
 }
 
 pub fn del_id_like(user_id: i32, goods_id: i32, conn: &DbConn) {

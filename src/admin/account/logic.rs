@@ -85,10 +85,16 @@ pub fn update_staff(id: i32, staff: models::NewStaff, conn: &DbConn) {
 pub fn get_shop_user_by_page(page: i32, mobile: Option<String>, limit: i32, conn: &DbConn) -> Option<(Vec<models::ShopUser>, i32)> {
     let all_goods = match mobile {
         Some(title) => {
-            dsl::shop_user
-            .filter(dsl::mobile.eq(title))
-            .load::<models::ShopUser>(&**conn)
-            .ok()
+            if title.len() > 0{
+                dsl::shop_user
+                .filter(dsl::mobile.eq(title))
+                .load::<models::ShopUser>(&**conn)
+                .ok()
+            } else {
+                dsl::shop_user
+                .load::<models::ShopUser>(&**conn)
+                .ok()
+            }
         }
         None => {
             dsl::shop_user
