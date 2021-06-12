@@ -344,6 +344,7 @@ pub fn update_user_sex(token_user: TokenUser, data: String, conn: DbConn) -> Api
 #[post("/updatePassword/<old>/<new>/<newa>")]
 pub fn update_user_pass(token_user: TokenUser, old: String, new: String, newa: String, conn: DbConn) -> ApiResponse {
     let shop_user = logic::get_shop_user_by_id(token_user.id, &conn).unwrap();
+    let old = crate::util::get_md5(old);
     if shop_user.password.eq(&old) {
         let new = crate::util::get_md5(new);
         logic::update_user_pass(token_user.id, new, &conn);
