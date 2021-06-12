@@ -9,19 +9,12 @@ shop::models::Goods};
 
 #[post("/cart/add", data = "<add_cart>")]
 pub fn add_cart(token_user: TokenUser, add_cart: Json<FromCart>, conn: DbConn) -> ApiResponse {
-    if crate::admin::account::check_shop_user(token_user.id, &conn) {
-        let new_cart = NewCart::from(token_user.id, add_cart.into_inner());
-        logic::create_cart(new_cart, &conn);
-        ApiResponse {
-            json: json!(get_ok_resp("")),
-            status: Status::Ok
-        }
-    } else {
-        ApiResponse {
-            json: json!(get_ok_resp(token_user.id)),
-            status: Status::Forbidden
-        }
-    } 
+    let new_cart = NewCart::from(token_user.id, add_cart.into_inner());
+    logic::create_cart(new_cart, &conn);
+    ApiResponse {
+        json: json!(get_ok_resp("")),
+        status: Status::Ok
+    }
 }
 
 #[get("/cart/queryByUser")]

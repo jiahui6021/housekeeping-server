@@ -21,15 +21,3 @@ pub fn check_user_admin(id: i32, conn: &DbConn) -> bool {
         }
     }
 }
-
-pub fn check_shop_user(id: i32, conn: &DbConn) -> bool {
-    let user = User::from_id(id, &conn);
-    match user {
-        Some(user) => {
-            true
-        }
-        None => {
-            false
-        }
-    }
-}
