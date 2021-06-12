@@ -9,24 +9,17 @@ use super::models;
 
 #[get("/order/prepareCheckout?<chosenAddressId>&<idCarts>")]
 pub fn prepare(token_user: TokenUser, chosenAddressId: Option<i32>, idCarts : String, conn: DbConn) -> ApiResponse {
-    if crate::admin::account::check_user_admin(token_user.id, &conn) {
-        let addr_id = chosenAddressId.unwrap_or(1);
-        let addr = crate::admin::account::logic::get_addr_by_id(addr_id, &conn).unwrap_or_default();
-        let id_carts: Vec<_> = idCarts.split(',').collect();
-        let carts = logic::get_cards_by_ids(id_carts, token_user.id, &conn);
-        let resp = Prapare {
-            addr,
-            list: carts
-        };
-        ApiResponse {
-            json: json!(get_ok_resp(resp)),
-            status: Status::Ok
-        }
-    } else {
-        ApiResponse {
-            json: json!(""),
-            status: Status::Forbidden
-        }
+    let addr_id = chosenAddressId.unwrap_or(1);
+    let addr = crate::admin::account::logic::get_addr_by_id(addr_id, &conn).unwrap_or_default();
+    let id_carts: Vec<_> = idCarts.split(',').collect();
+    let carts = logic::get_cards_by_ids(id_carts, token_user.id, &conn);
+    let resp = Prapare {
+        addr,
+        list: carts
+    };
+    ApiResponse {
+        json: json!(get_ok_resp(resp)),
+        status: Status::Ok
     }
 }
 
@@ -40,44 +33,30 @@ pub fn save_order(
     idCarts: String, 
     conn: DbConn
 ) -> ApiResponse {
-    if crate::admin::account::check_user_admin(token_user.id, &conn) {
-        let id_carts = crate::util::split_string_to_i32_vec(idCarts);
-        let order_resp = logic::create_new_order(id_carts, idAddress, date, time,token_user.id, &conn);
-        ApiResponse {
-            json: json!(get_ok_resp(order_resp)),
-            status: Status::Ok
-        }
-    } else {
-        ApiResponse {
-            json: json!(""),
-            status: Status::Forbidden
-        }
+    let id_carts = crate::util::split_string_to_i32_vec(idCarts);
+    let order_resp = logic::create_new_order(id_carts, idAddress, date, time,token_user.id, &conn);
+    ApiResponse {
+        json: json!(get_ok_resp(order_resp)),
+        status: Status::Ok
     }
 }
 
 #[get("/order/getOrders?<page>&<limit>&<status>")]
 pub fn get_order(token_user: TokenUser, page: i32, limit: i32, status: Option<i32>, conn: DbConn) -> ApiResponse {
-    if crate::admin::account::check_user_admin(token_user.id, &conn) {
-        let (order, num) = logic::get_order_by_range_i32(token_user.id, status, page, limit, &conn).unwrap_or_default();
-        let resp = models::OrderList {
-            records: order,
-            current: page,
-            limit,
-            offset: limit,
-            pages: page,
-            searchCount: true,
-            size: limit,
-            total: num,
-        };
-        ApiResponse {
-            json: json!(get_ok_resp(resp)),
-            status: Status::Ok
-        }
-    } else {
-        ApiResponse {
-            json: json!(""),
-            status: Status::Forbidden
-        }
+    let (order, num) = logic::get_order_by_range_i32(token_user.id, status, page, limit, &conn).unwrap_or_default();
+    let resp = models::OrderList {
+        records: order,
+        current: page,
+        limit,
+        offset: limit,
+        pages: page,
+        searchCount: true,
+        size: limit,
+        total: num,
+    };
+    ApiResponse {
+        json: json!(get_ok_resp(resp)),
+        status: Status::Ok
     }
 }
 
@@ -117,17 +96,10 @@ pub fn get_order_admin(
 
 #[get("/order/<id>")]
 pub fn get_id_order(token_user: TokenUser, id: i32, conn: DbConn) -> ApiResponse {
-    if crate::admin::account::check_user_admin(token_user.id, &conn) {
-        let order = logic::get_order_resp_by_id(id, &conn);
-        ApiResponse {
-            json: json!(get_ok_resp(order)),
-            status: Status::Ok
-        }
-    } else {
-        ApiResponse {
-            json: json!(""),
-            status: Status::Forbidden
-        }
+    let order = logic::get_order_resp_by_id(id, &conn);
+    ApiResponse {
+        json: json!(get_ok_resp(order)),
+        status: Status::Ok
     }
 }
 
