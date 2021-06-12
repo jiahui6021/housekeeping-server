@@ -18,7 +18,7 @@ pub fn add_cart(token_user: TokenUser, add_cart: Json<FromCart>, conn: DbConn) -
         }
     } else {
         ApiResponse {
-            json: json!(get_ok_resp("")),
+            json: json!(get_ok_resp(token_user.id)),
             status: Status::Forbidden
         }
     } 
