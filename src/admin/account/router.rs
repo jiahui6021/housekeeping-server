@@ -65,6 +65,12 @@ pub fn info_admin(token_user: TokenUser, conn: DbConn) -> ApiResponse {
 
 #[post("/loginOrReg?<mobile>&<smsCode>")]
 pub fn loginOrReg(mobile: String, smsCode: String, conn: DbConn) -> ApiResponse {
+    if !smsCode.eq("123456") {
+        return ApiResponse{
+            json: json!(get_ok_resp("验证码错误")),
+            status: Status::Ok,
+        };
+    }
     let resp = match logic::get_shop_user(&mobile, &conn) {
         Some(shop_user) => {
             ShopUserResp {

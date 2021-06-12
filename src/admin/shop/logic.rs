@@ -375,7 +375,7 @@ pub fn if_like(user_id: i32, goods_id:i32, conn: &DbConn) -> bool {
     .filter(like::dsl::goods_id.eq(goods_id))
     .load::<models::Like>(&**conn)
     .unwrap_or_default();
-    likes.is_empty()
+    !likes.is_empty()
 }
 
 pub fn del_id_like(user_id: i32, goods_id: i32, conn: &DbConn) {
